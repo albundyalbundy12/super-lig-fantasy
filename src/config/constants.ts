@@ -9,8 +9,17 @@ export const CURRENT_SEASON_ID = 25682;
 /**
  * Historical test fixture used to validate the data + scoring chain.
  * Galatasaray vs Beşiktaş, Season 22057. See docs/API_TEST_RESULTS.md.
+ *
+ * This data is INTENTIONALLY kept separate from the current season (25682):
+ * it exists only to prove the sync + scoring pipeline and must never be mixed
+ * into the live game pool (squads, transfer market, current-season scoring).
  */
 export const TEST_FIXTURE_ID = 18903623;
+export const TEST_SEASON_ID = 22057;
+
+/** Display labels for the two clearly-separated datasets (Turkish UI). */
+export const TEST_DATA_LABEL = "2023/24 Galatasaray vs Beşiktaş";
+export const CURRENT_SEASON_LABEL = "2025/2026 Süper Lig";
 
 export const IN_GAME_CURRENCY = "TL" as const;
 export const DEFAULT_START_BUDGET = 100_000_000; // 100 Mio. TL

@@ -1,1 +1,2 @@
 - [Card palette scoping](card-palette-scoping.md) — .card re-scopes CSS vars so existing inline-styled children auto-adopt the on-light theme without per-element edits.
+- [Current-season data scope](current-season-data-scope.md) — test (season 22057) & live (25682) players share one table; source the live pool via getActiveCurrentSeasonPlayers, never raw players.

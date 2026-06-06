@@ -3,15 +3,21 @@ import { getStoredSeasonReport } from "@/lib/sync";
 import { getDbStatus, prisma } from "@/lib/db";
 import {
   CURRENT_SEASON_ID,
+  CURRENT_SEASON_LABEL,
   DENGELI_LEAGUE,
   DENGELI_SQUAD_COMPOSITION,
   DENGELI_SQUAD_SIZE,
   SUPER_LIG_LEAGUE_ID,
+  TEST_DATA_LABEL,
   TEST_FIXTURE_ID,
 } from "@/config/constants";
 
 import { EMPTY_SLOT_POINTS } from "@/lib/scoring/rules";
 import { formatTL } from "@/lib/fantasy/format";
+import {
+  getCurrentSeasonReadiness,
+  getHistoricalTestDataScope,
+} from "@/lib/fantasy/data-scope";
 
 import {
   calculatePlayerScoresAction,
@@ -50,6 +56,13 @@ export default async function AdminSyncPage() {
   // times) read from our own DB after running the season sync.
   const seasonReport = db.configured
     ? await getStoredSeasonReport(CURRENT_SEASON_ID)
+    : null;
+
+  // Data separation: historical test dataset vs current-season readiness. Both
+  // are pure DB reads and never touch the historical test data.
+  const testScope = db.configured ? await getHistoricalTestDataScope() : null;
+  const currentReadiness = db.configured
+    ? await getCurrentSeasonReadiness()
     : null;
 
   const recentScoringRuns = db.configured
@@ -197,9 +210,16 @@ export default async function AdminSyncPage() {
       <div className="card">
         <span className="tag">Test Maçı</span>
         <p>
-          Galatasaray vs Beşiktaş — fixture ID{" "}
+          Test verisi: <strong>{TEST_DATA_LABEL}</strong> — fixture ID{" "}
           <strong>{TEST_FIXTURE_ID}</strong>.
         </p>
+        {testScope?.exists && (
+          <p style={{ fontSize: 13, color: "var(--muted)" }}>
+            Kayıtlı: {testScope.totalFixtures} maç ·{" "}
+            {testScope.teamsAvailable} takım · {testScope.playersAvailable}{" "}
+            oyuncu. Bu veri yalnızca test amaçlıdır ve güncel sezona karışmaz.
+          </p>
+        )}
         <form action={syncTestFixtureAction}>
           <button
             type="submit"
@@ -218,8 +238,9 @@ export default async function AdminSyncPage() {
       <div className="card">
         <span className="tag">Güncel Sezon</span>
         <p>
-          Süper Lig (lig <strong>{SUPER_LIG_LEAGUE_ID}</strong>) — güncel sezon
-          ID <strong>{CURRENT_SEASON_ID}</strong>.
+          Güncel sezon: <strong>{CURRENT_SEASON_LABEL}</strong> (lig{" "}
+          <strong>{SUPER_LIG_LEAGUE_ID}</strong>, sezon ID{" "}
+          <strong>{CURRENT_SEASON_ID}</strong>).
         </p>
         <form action={syncCurrentSeasonAction}>
           <button
@@ -251,6 +272,45 @@ export default async function AdminSyncPage() {
               Kayıtlı hafta: <strong>{seasonReport.totalRounds}</strong> ·
               Kayıtlı maç: <strong>{seasonReport.totalFixtures}</strong>
             </p>
+            {currentReadiness && (
+              <p style={{ fontSize: 13, marginTop: 4 }}>
+                Güncel sezon takımları:{" "}
+                <strong
+                  style={{
+                    color: currentReadiness.teamsAvailable
+                      ? "var(--gold, #d4af37)"
+                      : "var(--muted)",
+                  }}
+                >
+                  {currentReadiness.teamsAvailable ? "var" : "yok"}
+                </strong>{" "}
+                · Oyuncular (kadro):{" "}
+                <strong
+                  style={{
+                    color: currentReadiness.playersAvailable
+                      ? "var(--gold, #d4af37)"
+                      : "var(--muted)",
+                  }}
+                >
+                  {currentReadiness.playersAvailable ? "var" : "yok"}
+                </strong>
+              </p>
+            )}
+            {currentReadiness && !currentReadiness.squadSyncReady && (
+              <p
+                style={{
+                  fontSize: 13,
+                  color: "var(--muted)",
+                  marginTop: 4,
+                }}
+              >
+                Eksik: güncel sezon takımları ve oyuncu kadroları henüz
+                senkronize edilmedi. Sıradaki adım — takımları ve her takımın
+                kadrosunu çekip oyuncuları güncel takımlarına bağlamak. Hafta ve
+                maçlar hazır; kadrolar gelince dengeli başlangıç ve transfer
+                havuzu güncel sezondan beslenecek.
+              </p>
+            )}
             <p style={{ fontSize: 13, marginTop: 4 }}>
               Sonraki hafta / kilit:{" "}
               {seasonReport.nextRound ? (

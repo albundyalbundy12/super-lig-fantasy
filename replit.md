@@ -5,6 +5,30 @@ Automated Süper Lig fantasy football manager game using real football API data
 
 ## Current status
 
+**Data separation — historical test data vs current season (complete).** The
+two datasets are now clearly separated and surfaced read-only on `/admin/sync`:
+
+- **Test verisi: 2023/24 Galatasaray vs Beşiktaş** (fixture 18903623, season
+  22057) — 1 fixture, 2 teams, 42 players, scores calculated. Kept intact; never
+  mixed into the live game.
+- **Güncel sezon: 2025/2026 Süper Lig** (league 600, season 25682) — 34 rounds
+  and 306 fixtures stored, but **no teams and no player squads (kadro) yet**.
+
+Separation is done with pure read queries keyed on the Sportmonks season id (no
+schema change, no migration, historical data untouched). Helpers live in
+`src/lib/fantasy/data-scope.ts`:
+`getSeasonDataScope` / `getHistoricalTestDataScope` / `getCurrentSeasonDataScope`
+(per-season counts: rounds, fixtures, fixtures-with-participants, teams,
+players), `getCurrentSeasonReadiness` (boolean checklist incl. `squadSyncReady`),
+and `getActiveCurrentSeasonPlayers` (the single source of truth for the
+current-season player pool — returns `[]` until squads are synced, which is what
+keeps the 42 test players out of the live game).
+
+**Next recommended task:** current-season team + player (kadro) sync — fetch the
+Süper Lig clubs into `real_teams`, fetch each club's squad into `players` with
+`current_team_id` + `position_id`, so `getActiveCurrentSeasonPlayers` returns the
+real pool and Dengeli Başlangıç / transfer market draw from the current season.
+
 **Task 12 — current-season integration tested (complete).** The current Süper
 Lig season (league 600, season 25682) is fetched from Sportmonks and stored
 idempotently: season info, 34 rounds and 306 fixtures. Round lock time (earliest
@@ -13,7 +37,7 @@ fixture `starting_at`) is computed on read. A "Current season" card on
 recorded in `docs/API_TEST_RESULTS.md` §12. Build strictly task-by-task; see
 `docs/CODING_AGENT_TASKS.md`.
 
-Done so far: Tasks 1–12.
+Done so far: Tasks 1–12 + data separation.
 
 ## Architecture
 
