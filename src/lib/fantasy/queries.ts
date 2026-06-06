@@ -99,9 +99,21 @@ export async function getManagerSquad() {
   return { team, squad, pointsByPlayerId };
 }
 
-/** Simple league table from manager_round_scores, ranked by total points. */
+/**
+ * Simple league table for the selected/test league, ranked by total points.
+ * The selected league is the league of the first manager team (the test
+ * manager), matching the squad / lineup / points / transfer-market pages.
+ * Ranking: total points descending, tie-broken by squad value descending.
+ */
 export async function getLeagueTable() {
+  const firstTeam = await prisma.managerTeam.findFirst({
+    orderBy: { id: "asc" },
+    select: { fantasyLeagueId: true },
+  });
+  if (!firstTeam) return [];
+
   const teams = await prisma.managerTeam.findMany({
+    where: { fantasyLeagueId: firstTeam.fantasyLeagueId },
     include: {
       roundScores: { orderBy: { roundId: "desc" } },
       user: { select: { name: true, email: true } },
@@ -122,6 +134,8 @@ export async function getLeagueTable() {
     };
   });
 
-  rows.sort((a, b) => b.pointsTotal - a.pointsTotal);
+  rows.sort(
+    (a, b) => b.pointsTotal - a.pointsTotal || b.squadValue - a.squadValue,
+  );
   return rows;
 }

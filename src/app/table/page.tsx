@@ -24,16 +24,16 @@ export default async function TablePage() {
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ textAlign: "left", color: "var(--muted)" }}>
-                <th style={{ padding: "6px 8px" }}>#</th>
-                <th style={{ padding: "6px 8px" }}>Takım</th>
+                <th style={{ padding: "6px 8px" }}>Sıra</th>
+                <th style={{ padding: "6px 8px" }}>Takım / Menajer</th>
                 <th style={{ padding: "6px 8px", textAlign: "right" }}>
-                  Hafta
+                  Son Hafta Puanı
                 </th>
                 <th style={{ padding: "6px 8px", textAlign: "right" }}>
-                  Toplam
+                  Toplam Puan
                 </th>
                 <th style={{ padding: "6px 8px", textAlign: "right" }}>
-                  Kadro değeri
+                  Kadro Değeri
                 </th>
                 <th style={{ padding: "6px 8px", textAlign: "right" }}>Bütçe</th>
               </tr>
