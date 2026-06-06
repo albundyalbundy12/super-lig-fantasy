@@ -35,6 +35,9 @@ export const ASSIST_POINTS = 2;
 export const YELLOW_CARD_POINTS = -1;
 export const RED_CARD_POINTS = -4;
 
+/** Empty lineup slot penalty (MVP_BUILD_PLAN.md §3 rule 8). */
+export const EMPTY_SLOT_POINTS = -4;
+
 /** Goal points by Sportmonks position id (docs/SCORING_RULES.md §6). */
 export function goalPointsForPosition(positionId: number | null): number {
   switch (positionId) {
