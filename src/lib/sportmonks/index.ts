@@ -31,3 +31,11 @@ export type {
   FixtureWithEvents,
   FixtureWithLineups,
 } from "./fixtures";
+
+export {
+  getSeason,
+  getRoundsBySeason,
+  getFixturesBySeason,
+} from "./season";
+
+export type { SportmonksSeason, SportmonksRound } from "./season";

@@ -1,9 +1,12 @@
 import { isSportmonksConfigured } from "@/lib/sportmonks";
+import { getStoredSeasonReport } from "@/lib/sync";
 import { getDbStatus, prisma } from "@/lib/db";
 import {
+  CURRENT_SEASON_ID,
   DENGELI_LEAGUE,
   DENGELI_SQUAD_COMPOSITION,
   DENGELI_SQUAD_SIZE,
+  SUPER_LIG_LEAGUE_ID,
   TEST_FIXTURE_ID,
 } from "@/config/constants";
 
@@ -14,8 +17,19 @@ import {
   calculatePlayerScoresAction,
   createTestManagerScoreAction,
   generateDengeliSquadsAction,
+  syncCurrentSeasonAction,
   syncTestFixtureAction,
 } from "./actions";
+
+function formatDateTime(value: Date | null): string {
+  if (!value) return "—";
+  return value.toISOString().replace("T", " ").slice(0, 16) + " UTC";
+}
+
+function formatDate(value: Date | null): string {
+  if (!value) return "—";
+  return value.toISOString().slice(0, 10);
+}
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +45,12 @@ export default async function AdminSyncPage() {
         take: 5,
       })
     : [];
+
+  // Task 12: current-season report (season, rounds, fixtures + computed lock
+  // times) read from our own DB after running the season sync.
+  const seasonReport = db.configured
+    ? await getStoredSeasonReport(CURRENT_SEASON_ID)
+    : null;
 
   const recentScoringRuns = db.configured
     ? await prisma.scoringRun.findMany({
@@ -198,6 +218,110 @@ export default async function AdminSyncPage() {
           Fetches participants, events, lineups and lineup details, then upserts
           them into the database. Running it again creates no duplicates.
         </p>
+      </div>
+
+      <div className="card">
+        <span className="tag">Current season</span>
+        <p>
+          Süper Lig (league <strong>{SUPER_LIG_LEAGUE_ID}</strong>) — current
+          season ID <strong>{CURRENT_SEASON_ID}</strong>.
+        </p>
+        <form action={syncCurrentSeasonAction}>
+          <button
+            type="submit"
+            disabled={!sportmonksReady || !db.configured}
+            style={{
+              marginTop: 8,
+              padding: "8px 14px",
+              borderRadius: 6,
+              border: "1px solid var(--border, #333)",
+              cursor:
+                !sportmonksReady || !db.configured ? "not-allowed" : "pointer",
+            }}
+          >
+            Sync current season
+          </button>
+        </form>
+        <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>
+          Fetches the season, its rounds and its fixtures, then upserts them.
+          Does not touch the historical test fixture. Running it again creates no
+          duplicates.
+        </p>
+
+        {!seasonReport || !seasonReport.exists ? (
+          <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>
+            No season data yet. Click “Sync current season”.
+          </p>
+        ) : (
+          <>
+            <p style={{ marginTop: 12 }}>
+              <strong>{seasonReport.season?.name ?? "—"}</strong> ·{" "}
+              {seasonReport.season?.isCurrent ? "current" : "not current"} ·{" "}
+              {formatDate(seasonReport.season?.startsAt ?? null)} →{" "}
+              {formatDate(seasonReport.season?.endsAt ?? null)}
+            </p>
+            <p style={{ fontSize: 13, color: "var(--muted)" }}>
+              Rounds stored: <strong>{seasonReport.totalRounds}</strong> ·
+              Fixtures stored: <strong>{seasonReport.totalFixtures}</strong>
+            </p>
+            <p style={{ fontSize: 13, marginTop: 4 }}>
+              Next round / lock:{" "}
+              {seasonReport.nextRound ? (
+                <strong>
+                  {seasonReport.nextRound.name
+                    ? `Round ${seasonReport.nextRound.name}`
+                    : `#${seasonReport.nextRound.sportmonksRoundId}`}{" "}
+                  — {formatDateTime(seasonReport.nextRound.lockTime)}
+                </strong>
+              ) : (
+                <em style={{ color: "var(--muted)" }}>
+                  no upcoming round (season finished)
+                </em>
+              )}
+            </p>
+
+            {seasonReport.rounds.length > 0 && (
+              <table
+                style={{
+                  width: "100%",
+                  borderCollapse: "collapse",
+                  fontSize: 13,
+                  marginTop: 12,
+                }}
+              >
+                <thead>
+                  <tr style={{ textAlign: "left", color: "var(--muted)" }}>
+                    <th style={{ padding: "4px 8px" }}>Round</th>
+                    <th style={{ padding: "4px 8px" }}>Status</th>
+                    <th style={{ padding: "4px 8px", textAlign: "right" }}>
+                      Fixtures
+                    </th>
+                    <th style={{ padding: "4px 8px" }}>Lock time (earliest)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {seasonReport.rounds.map((round) => (
+                    <tr
+                      key={round.sportmonksRoundId}
+                      style={{ borderTop: "1px solid var(--border, #333)" }}
+                    >
+                      <td style={{ padding: "4px 8px" }}>
+                        {round.name ?? `#${round.sportmonksRoundId}`}
+                      </td>
+                      <td style={{ padding: "4px 8px" }}>{round.status}</td>
+                      <td style={{ padding: "4px 8px", textAlign: "right" }}>
+                        {round.fixtureCount}
+                      </td>
+                      <td style={{ padding: "4px 8px" }}>
+                        {formatDateTime(round.lockTime)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </>
+        )}
       </div>
 
       <div className="card">

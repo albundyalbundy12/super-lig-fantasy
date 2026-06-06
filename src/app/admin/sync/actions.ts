@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 
-import { TEST_FIXTURE_ID } from "@/config/constants";
-import { syncFixture } from "@/lib/sync";
+import { CURRENT_SEASON_ID, TEST_FIXTURE_ID } from "@/config/constants";
+import { syncCurrentSeason, syncFixture } from "@/lib/sync";
 import { scoreFixturePlayers, scoreTestManager } from "@/lib/scoring";
 import { generateBalancedSquads } from "@/lib/squad/dengeli";
 
@@ -13,6 +13,16 @@ import { generateBalancedSquads } from "@/lib/squad/dengeli";
  */
 export async function syncTestFixtureAction(): Promise<void> {
   await syncFixture(TEST_FIXTURE_ID);
+  revalidatePath("/admin/sync");
+}
+
+/**
+ * Minimal admin trigger (Task 12): sync the current Süper Lig season (season,
+ * rounds and fixtures) into our own tables. Does not touch the historical test
+ * fixture. Idempotent — safe to run repeatedly.
+ */
+export async function syncCurrentSeasonAction(): Promise<void> {
+  await syncCurrentSeason(CURRENT_SEASON_ID);
   revalidatePath("/admin/sync");
 }
 

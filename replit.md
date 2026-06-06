@@ -5,12 +5,15 @@ Automated Süper Lig fantasy football manager game using real football API data
 
 ## Current status
 
-**Task 2 — database schema (complete).** PostgreSQL schema for the MVP is defined
-with Prisma and migrated. The Sportmonks sync (Task 3/4) and scoring engine
-(Task 5+) are still placeholders — no API calls or scoring logic yet. Build
-strictly task-by-task; see `docs/CODING_AGENT_TASKS.md`.
+**Task 12 — current-season integration tested (complete).** The current Süper
+Lig season (league 600, season 25682) is fetched from Sportmonks and stored
+idempotently: season info, 34 rounds and 306 fixtures. Round lock time (earliest
+fixture `starting_at`) is computed on read. A "Current season" card on
+`/admin/sync` triggers the sync and shows the stored report. Tested endpoints
+recorded in `docs/API_TEST_RESULTS.md` §12. Build strictly task-by-task; see
+`docs/CODING_AGENT_TASKS.md`.
 
-Done so far: Task 1 (Next.js + TypeScript scaffold), Task 2 (DB schema).
+Done so far: Tasks 1–12.
 
 ## Architecture
 

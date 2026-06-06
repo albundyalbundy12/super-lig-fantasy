@@ -547,16 +547,140 @@ Minuten wahrscheinlich vorhanden
 
 ---
 
-# 12. Nächster technischer Schritt
+# 12. Aktuelle Saison getestet (League 600, Season 25682)
+
+Getestet am 06.06.2026 gegen die Live-API. Alle Reads laufen ausschließlich
+über den server-only Sportmonks-Client.
+
+## 12.1 Saison-Info
+
+Getestet:
+
+```text
+GET /v3/football/seasons/25682
+```
+
+Ergebnis:
+
+```text
+Funktioniert.
+name = "2025/2026"
+league_id = 600
+is_current = true
+finished = false
+starting_at = 2025-08-08
+ending_at = 2026-05-17
+```
+
+Status:
+
+```text
+Bestanden
+```
+
+## 12.2 Rounds (Spieltage) der Saison
+
+Getestet (richtiger Endpoint):
+
+```text
+GET /v3/football/rounds/seasons/25682
+```
+
+Ergebnis:
+
+```text
+Funktioniert. 34 Rounds geliefert.
+Felder: id, name (Nummer als String, z.B. "25"), is_current, finished,
+starting_at (nur Datum, z.B. "2026-03-07"), ending_at, season_id, stage_id
+```
+
+Status:
+
+```text
+Bestanden
+```
+
+## 12.3 Fixtures der Saison
+
+Getestet (richtiger Endpoint — via Season-Include):
+
+```text
+GET /v3/football/seasons/25682?include=fixtures
+```
+
+Ergebnis:
+
+```text
+Funktioniert. 306 Fixtures geliefert.
+Felder u.a.: id, round_id, season_id, state_id, starting_at
+("YYYY-MM-DD HH:mm:ss"), starting_at_timestamp (Unix-Sekunden)
+```
+
+Status:
+
+```text
+Bestanden
+```
+
+## 12.4 Fehlgeschlagener Endpoint (Negativtest)
+
+Getestet:
+
+```text
+GET /v3/football/fixtures/seasons/25682
+```
+
+Ergebnis:
+
+```text
+404 — existiert nicht. Stattdessen Season-Include (12.3) verwenden.
+```
+
+## 12.5 Speicherung & Lock-Zeit
+
+Sync (`syncCurrentSeason`) speichert idempotent:
+
+```text
+seasons:  1 upsert  (Schlüssel sportmonks_season_id)
+rounds:   34 upserts (Schlüssel sportmonks_round_id)
+fixtures: 306 upserts (Schlüssel sportmonks_fixture_id)
+```
+
+Zweiter Lauf: 0 neu erstellt, alle aktualisiert (idempotent bestätigt).
+Test-Fixture 18903623 (Saison 22057) bleibt unberührt.
+
+Round-Lock-Zeit:
+
+```text
+= frühestes fixture.starting_at pro Round.
+Es gibt KEINE Lock-Spalte im Schema → wird beim Lesen/Anzeigen berechnet
+(getStoredSeasonReport), nicht gespeichert.
+Beispiel Round 1: Lock = 2025-08-08 18:30:00 UTC (9 Fixtures).
+```
+
+Hinweis Saison-Status:
+
+```text
+Am 06.06.2026 ist die Saison 2025/2026 abgelaufen (Ende 2026-05-17),
+daher kein laufender/nächster Round → nextRound = null.
+```
+
+Status:
+
+```text
+Bestanden
+```
+
+---
+
+# 13. Nächster technischer Schritt
 
 Nächste Tests:
 
 ```text
-1. Aktuelle Saison 25682 sauber abrufen
-2. Spieltage / Rounds finden
-3. Aktuelle Kader pro Team abrufen
-4. Verletzungen/Sperren prüfen
-5. Type-ID-Liste offiziell gegenprüfen
+1. Aktuelle Kader pro Team abrufen
+2. Verletzungen/Sperren prüfen
+3. Type-ID-Liste offiziell gegenprüfen
 ```
 
 Danach:
