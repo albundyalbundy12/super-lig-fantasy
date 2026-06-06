@@ -165,12 +165,11 @@ export default async function AdminSyncPage() {
   );
 
   return (
-    <>
+    <div className="admin-page">
       <div className="page-header">
-        <span className="page-eyebrow">Yönetim</span>
-        <h1>Veri Senkronizasyonu</h1>
-        <p className="page-sub">
-          Sportmonks veri senkronizasyonu ve puanlama kontrol paneli.
+        <h1 className="page-title">Veri Senkronizasyonu</h1>
+        <p className="page-subtitle">
+          Sportmonks senkronizasyonu ve puan hesaplama kontrol paneli.
         </p>
       </div>
 
@@ -181,8 +180,8 @@ export default async function AdminSyncPage() {
           <strong>{sportmonksReady ? "evet" : "hayır"}</strong>
         </p>
         <p style={{ color: "var(--muted)", fontSize: 13 }}>
-          <code>SPORTMONKS_API_TOKEN</code> değerini Replit Secrets içine
-          ekle. Token yalnızca sunucu tarafında okunur ve hiçbir zaman tarayıcıya
+          <code>SPORTMONKS_API_TOKEN</code> değişkenini Replit Secrets içine
+          ekle. Token yalnızca sunucu tarafında okunur ve tarayıcıya asla
           gönderilmez.
         </p>
       </div>
@@ -198,21 +197,14 @@ export default async function AdminSyncPage() {
       <div className="card">
         <span className="tag">Test Maçı</span>
         <p>
-          Galatasaray − Beşiktaş — maç ID{" "}
+          Galatasaray vs Beşiktaş — fixture ID{" "}
           <strong>{TEST_FIXTURE_ID}</strong>.
         </p>
         <form action={syncTestFixtureAction}>
           <button
             type="submit"
+            className="btn btn-gold"
             disabled={!sportmonksReady || !db.configured}
-            style={{
-              marginTop: 8,
-              padding: "8px 14px",
-              borderRadius: 6,
-              border: "1px solid var(--border, #333)",
-              cursor:
-                !sportmonksReady || !db.configured ? "not-allowed" : "pointer",
-            }}
           >
             Test Maçını Senkronize Et
           </button>
@@ -226,21 +218,14 @@ export default async function AdminSyncPage() {
       <div className="card">
         <span className="tag">Güncel Sezon</span>
         <p>
-          Süper Lig (lig <strong>{SUPER_LIG_LEAGUE_ID}</strong>) — güncel
-          sezon ID <strong>{CURRENT_SEASON_ID}</strong>.
+          Süper Lig (lig <strong>{SUPER_LIG_LEAGUE_ID}</strong>) — güncel sezon
+          ID <strong>{CURRENT_SEASON_ID}</strong>.
         </p>
         <form action={syncCurrentSeasonAction}>
           <button
             type="submit"
+            className="btn btn-gold"
             disabled={!sportmonksReady || !db.configured}
-            style={{
-              marginTop: 8,
-              padding: "8px 14px",
-              borderRadius: 6,
-              border: "1px solid var(--border, #333)",
-              cursor:
-                !sportmonksReady || !db.configured ? "not-allowed" : "pointer",
-            }}
           >
             Güncel Sezonu Senkronize Et
           </button>
@@ -329,21 +314,15 @@ export default async function AdminSyncPage() {
       <div className="card">
         <span className="tag">Oyuncu Puanlama</span>
         <p>
-          Senkronize edilmiş ham veriden{" "}
+          Senkronize edilen ham veriden{" "}
           <strong>{TEST_FIXTURE_ID}</strong> maçı için oyuncu maç puanlarını
           hesapla.
         </p>
         <form action={calculatePlayerScoresAction}>
           <button
             type="submit"
+            className="btn btn-gold"
             disabled={!db.configured}
-            style={{
-              marginTop: 8,
-              padding: "8px 14px",
-              borderRadius: 6,
-              border: "1px solid var(--border, #333)",
-              cursor: !db.configured ? "not-allowed" : "pointer",
-            }}
           >
             Oyuncu Puanlarını Hesapla
           </button>
@@ -359,29 +338,22 @@ export default async function AdminSyncPage() {
         <span className="tag">Test Menajer Puanı</span>
         <p>
           Gerçek maç oyuncularından simüle bir test menajeri (kullanıcı, lig,
-          takım, kadro, diziliş) oluşturur ve haftasını{" "}
-          <code>player_match_scores</code> üzerinden puanlar.
+          takım, kadro, diziliş) oluştur ve haftasını{" "}
+          <code>player_match_scores</code> tablosundan puanla.
         </p>
         <form action={createTestManagerScoreAction}>
           <button
             type="submit"
+            className="btn btn-gold"
             disabled={!db.configured}
-            style={{
-              marginTop: 8,
-              padding: "8px 14px",
-              borderRadius: 6,
-              border: "1px solid var(--border, #333)",
-              cursor: !db.configured ? "not-allowed" : "pointer",
-            }}
           >
-            Test Menajer Puanını Oluştur
+            Test Menajer Puanı Oluştur
           </button>
         </form>
         <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>
-          Boş diziliş pozisyonları {EMPTY_SLOT_POINTS} puan alır; dizilişte
-          olmayan kadro oyuncuları (yedekler) 0 puan alır. Sportmonks çağrısı
-          yapılmaz. Tekrar çalıştırmak kopya hafta puanı veya diziliş pozisyonu
-          oluşturmaz.
+          Boş diziliş slotları {EMPTY_SLOT_POINTS} puan alır; dizilişte olmayan
+          kadro oyuncuları (yedekler) 0 puan alır. Sportmonks çağrısı yapılmaz.
+          Tekrar çalıştırmak kopya hafta puanı veya diziliş slotu oluşturmaz.
         </p>
       </div>
 
@@ -395,16 +367,10 @@ export default async function AdminSyncPage() {
         <form action={generateDengeliSquadsAction}>
           <button
             type="submit"
+            className="btn btn-gold"
             disabled={!db.configured}
-            style={{
-              marginTop: 8,
-              padding: "8px 14px",
-              borderRadius: 6,
-              border: "1px solid var(--border, #333)",
-              cursor: !db.configured ? "not-allowed" : "pointer",
-            }}
           >
-            Dengeli kadroları oluştur
+            Dengeli Kadroları Oluştur
           </button>
         </form>
         <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>
@@ -476,14 +442,14 @@ export default async function AdminSyncPage() {
         <span className="tag">Son Menajer Puanı</span>
         {!latestManagerScore ? (
           <p style={{ color: "var(--muted)", fontSize: 13 }}>
-            Henüz menajer puanı yok. “Test Menajer Puanını Oluştur”a tıkla.
+            Henüz menajer puanı yok. “Test Menajer Puanı Oluştur”a tıkla.
           </p>
         ) : (
           <>
             <p>
               <strong>{latestManagerScore.managerTeam.name}</strong> — hafta
               toplamı <strong>{latestManagerScore.pointsTotal}</strong> puan (
-              diziliş {latestManagerScore.pointsLineup}, boş pozisyon{" "}
+              diziliş {latestManagerScore.pointsLineup}, boş slot{" "}
               {latestManagerScore.pointsEmptySlots}).
             </p>
             <table
@@ -516,7 +482,7 @@ export default async function AdminSyncPage() {
                       <td style={{ padding: "4px 8px" }}>{slot.slotPosition}</td>
                       <td style={{ padding: "4px 8px" }}>
                         {slot.isEmpty ? (
-                          <em style={{ color: "var(--muted)" }}>boş pozisyon</em>
+                          <em style={{ color: "var(--muted)" }}>boş slot</em>
                         ) : (
                           slot.player?.name ?? `Oyuncu ${slot.playerId}`
                         )}
@@ -587,7 +553,7 @@ export default async function AdminSyncPage() {
                 <th style={{ padding: "4px 8px" }}>Çekilen</th>
                 <th style={{ padding: "4px 8px" }}>Oluşturulan</th>
                 <th style={{ padding: "4px 8px" }}>Güncellenen</th>
-                <th style={{ padding: "4px 8px" }}>Biten</th>
+                <th style={{ padding: "4px 8px" }}>Bitiş</th>
               </tr>
             </thead>
             <tbody>
@@ -611,10 +577,10 @@ export default async function AdminSyncPage() {
       </div>
 
       <div className="card">
-        <span className="tag">Son Puanlama Çalışmaları</span>
+        <span className="tag">Son Puanlama İşlemleri</span>
         {recentScoringRuns.length === 0 ? (
           <p style={{ color: "var(--muted)", fontSize: 13 }}>
-            Henüz puanlama çalışması kaydı yok.
+            Henüz puanlama işlemi kaydı yok.
           </p>
         ) : (
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
@@ -623,7 +589,7 @@ export default async function AdminSyncPage() {
                 <th style={{ padding: "4px 8px" }}>#</th>
                 <th style={{ padding: "4px 8px" }}>Durum</th>
                 <th style={{ padding: "4px 8px" }}>Oyuncu</th>
-                <th style={{ padding: "4px 8px" }}>Biten</th>
+                <th style={{ padding: "4px 8px" }}>Bitiş</th>
                 <th style={{ padding: "4px 8px" }}>Hata</th>
               </tr>
             </thead>
@@ -655,6 +621,6 @@ export default async function AdminSyncPage() {
           </table>
         )}
       </div>
-    </>
+    </div>
   );
 }
