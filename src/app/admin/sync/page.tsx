@@ -1,12 +1,19 @@
 import { isSportmonksConfigured } from "@/lib/sportmonks";
 import { getDbStatus, prisma } from "@/lib/db";
-import { TEST_FIXTURE_ID } from "@/config/constants";
+import {
+  DENGELI_LEAGUE,
+  DENGELI_SQUAD_COMPOSITION,
+  DENGELI_SQUAD_SIZE,
+  TEST_FIXTURE_ID,
+} from "@/config/constants";
 
 import { EMPTY_SLOT_POINTS } from "@/lib/scoring/rules";
+import { formatTL } from "@/lib/fantasy/format";
 
 import {
   calculatePlayerScoresAction,
   createTestManagerScoreAction,
+  generateDengeliSquadsAction,
   syncTestFixtureAction,
 } from "./actions";
 
@@ -31,6 +38,47 @@ export default async function AdminSyncPage() {
         take: 5,
       })
     : [];
+
+  // Dengeli Başlangıç demo league (Task 9): managers with their squads, so we
+  // can show squad size, position coverage, squad value and remaining budget.
+  const dengeliLeague = db.configured
+    ? await prisma.fantasyLeague.findUnique({
+        where: { inviteCode: DENGELI_LEAGUE.inviteCode },
+        include: {
+          managerTeams: {
+            orderBy: { id: "asc" },
+            include: {
+              squadPlayers: {
+                include: { player: { select: { positionId: true } } },
+              },
+            },
+          },
+        },
+      })
+    : null;
+
+  const dengeliRows = (dengeliLeague?.managerTeams ?? []).map((team) => {
+    const positionCounts: Record<string, number> = {};
+    for (const slot of DENGELI_SQUAD_COMPOSITION) {
+      positionCounts[slot.code] = team.squadPlayers.filter(
+        (sp) => sp.player.positionId === slot.positionId,
+      ).length;
+    }
+    return {
+      teamId: team.id,
+      teamName: team.name,
+      squadCount: team.squadPlayers.length,
+      positionCounts,
+      squadValue: team.squadValue,
+      remainingBudget: team.budget,
+    };
+  });
+
+  const dengeliValues = dengeliRows.map((r) => r.squadValue);
+  const dengeliSpread =
+    dengeliValues.length > 0
+      ? Math.max(...dengeliValues) - Math.min(...dengeliValues)
+      : 0;
 
   // Latest test-manager round score (Task 6), with its lineup slots so we can
   // show the per-slot breakdown (empty slots, bank players) on the page.
@@ -207,6 +255,93 @@ export default async function AdminSyncPage() {
           lineup (the bench) score 0. No Sportmonks calls. Running it again
           creates no duplicate round scores or lineup slots.
         </p>
+      </div>
+
+      <div className="card">
+        <span className="tag">Dengeli Başlangıç</span>
+        <p>
+          {DENGELI_SQUAD_SIZE} kişilik dengeli başlangıç kadrolarını oluştur
+          (her menajere 2 Kaleci, 5 Defans, 5 Orta Saha, 3 Forvet). Eksikse
+          oyunculara başlangıç piyasa değeri atanır.
+        </p>
+        <form action={generateDengeliSquadsAction}>
+          <button
+            type="submit"
+            disabled={!db.configured}
+            style={{
+              marginTop: 8,
+              padding: "8px 14px",
+              borderRadius: 6,
+              border: "1px solid var(--border, #333)",
+              cursor: !db.configured ? "not-allowed" : "pointer",
+            }}
+          >
+            Dengeli kadroları oluştur
+          </button>
+        </form>
+        <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>
+          Kadro değerleri snake draft ile dengelenir; kimse haksız yıldız
+          avantajı almaz. Sportmonks çağrısı yapılmaz. Tekrar çalıştırmak kadro
+          oyuncularını çoğaltmaz.
+        </p>
+
+        {dengeliRows.length === 0 ? (
+          <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>
+            Henüz dengeli kadro oluşturulmadı. “Dengeli kadroları oluştur”a
+            tıkla.
+          </p>
+        ) : (
+          <>
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                fontSize: 13,
+                marginTop: 12,
+              }}
+            >
+              <thead>
+                <tr style={{ textAlign: "left", color: "var(--muted)" }}>
+                  <th style={{ padding: "4px 8px" }}>Takım</th>
+                  <th style={{ padding: "4px 8px" }}>Oyuncu</th>
+                  <th style={{ padding: "4px 8px" }}>Mevkiler</th>
+                  <th style={{ padding: "4px 8px", textAlign: "right" }}>
+                    Kadro değeri
+                  </th>
+                  <th style={{ padding: "4px 8px", textAlign: "right" }}>
+                    Kalan bütçe
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {dengeliRows.map((row) => (
+                  <tr
+                    key={row.teamId}
+                    style={{ borderTop: "1px solid var(--border, #333)" }}
+                  >
+                    <td style={{ padding: "4px 8px" }}>{row.teamName}</td>
+                    <td style={{ padding: "4px 8px" }}>{row.squadCount}</td>
+                    <td style={{ padding: "4px 8px" }}>
+                      {DENGELI_SQUAD_COMPOSITION.map(
+                        (slot) => `${slot.code} ${row.positionCounts[slot.code]}`,
+                      ).join(" · ")}
+                    </td>
+                    <td style={{ padding: "4px 8px", textAlign: "right" }}>
+                      {formatTL(row.squadValue)}
+                    </td>
+                    <td style={{ padding: "4px 8px", textAlign: "right" }}>
+                      {formatTL(row.remainingBudget)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>
+              Kadro değeri farkı (en yüksek − en düşük):{" "}
+              <strong>{formatTL(dengeliSpread)}</strong>.
+            </p>
+          </>
+        )}
       </div>
 
       <div className="card">

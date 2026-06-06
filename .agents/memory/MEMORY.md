@@ -4,3 +4,4 @@
 - [Sportmonks IDs exceed 32-bit](sportmonks-id-sizes.md) — lineup/event/detail IDs overflow Postgres INT4; those unique-key columns are BigInt, pass BigInt(x) in upserts/Set keys.
 - [Scoring needs internal Player rows](scoring-player-fk.md) — player_match_scores.player_id is an internal FK; engine derives Player rows from synced lineups, don't overwrite them on rerun.
 - [Manager scoring deps + round linkage](manager-scoring-deps.md) — manager scores need derived Season/Round; link fixtures→round via raw sportmonksRoundId; squad table has no unique key (delete+recreate).
+- [Testing server-only logic](testing-server-only-logic.md) — server-only modules throw under tsx/node; exercise via a throwaway api route + curl, not direct import.

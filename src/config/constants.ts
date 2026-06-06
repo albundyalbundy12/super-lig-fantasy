@@ -17,6 +17,73 @@ export const DEFAULT_START_BUDGET = 100_000_000; // 100 Mio. TL
 export const DEFAULT_FORMATION = "4-4-2" as const;
 
 /**
+ * Sportmonks position ids used across the project (docs/TYPE_ID_MAPPING.md).
+ */
+export const POSITION_ID = {
+  GK: 24,
+  DEF: 25,
+  MID: 26,
+  FWD: 27,
+} as const;
+
+/**
+ * Dengeli Başlangıç ("balanced start") config (Task 9).
+ *
+ * MVP squad size is 15 players (2 GK, 5 DEF, 5 MID, 3 FWD) so every manager can
+ * field a legal 4-4-2 lineup. Players are distributed by a deterministic snake
+ * draft on market value, so squad values stay close and no manager gets an
+ * unfair topstar advantage.
+ */
+export const DENGELI_SQUAD_COMPOSITION = [
+  { positionId: POSITION_ID.GK, code: "GK", count: 2 },
+  { positionId: POSITION_ID.DEF, code: "DEF", count: 5 },
+  { positionId: POSITION_ID.MID, code: "MID", count: 5 },
+  { positionId: POSITION_ID.FWD, code: "FWD", count: 3 },
+] as const;
+
+export const DENGELI_SQUAD_SIZE = 15;
+
+/**
+ * Initial fantasy market value ranges (TL) per position, used only when a
+ * player has no market value yet. These are internal game values, not real
+ * Sportmonks transfer values. Kept small enough that a balanced 15-man squad
+ * costs clearly less than the 100M TL start budget, leaving positive remaining
+ * budget. The exact value is derived deterministically from the player's stable
+ * Sportmonks id, so reseeding/reruns produce identical values.
+ */
+export const DENGELI_INITIAL_VALUE_RANGES: Record<
+  number,
+  { min: number; max: number; step: number }
+> = {
+  [POSITION_ID.GK]: { min: 2_000_000, max: 5_000_000, step: 500_000 },
+  [POSITION_ID.DEF]: { min: 3_000_000, max: 6_000_000, step: 500_000 },
+  [POSITION_ID.MID]: { min: 3_000_000, max: 7_000_000, step: 500_000 },
+  [POSITION_ID.FWD]: { min: 4_000_000, max: 9_000_000, step: 500_000 },
+};
+
+export const DENGELI_LEAGUE = {
+  name: "Dengeli Test Ligi",
+  inviteCode: "DENGELI-TEST-1",
+} as const;
+
+/**
+ * Test managers for the Dengeli Başlangıç demo. The player pool only has 4
+ * goalkeepers, so at 2 GK per squad only two managers can be fully supplied.
+ */
+export const DENGELI_MANAGERS = [
+  {
+    email: "dengeli-a@superlig.local",
+    userName: "Dengeli Menajer A",
+    teamName: "Dengeli A FC",
+  },
+  {
+    email: "dengeli-b@superlig.local",
+    userName: "Dengeli Menajer B",
+    teamName: "Dengeli B FC",
+  },
+] as const;
+
+/**
  * Deterministic test manager used by the simulated manager-scoring flow
  * (Task 6). Players are referenced by their stable Sportmonks player id so the
  * flow survives a database reseed. All ids belong to fixture 18903623's squads.

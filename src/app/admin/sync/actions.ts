@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { TEST_FIXTURE_ID } from "@/config/constants";
 import { syncFixture } from "@/lib/sync";
 import { scoreFixturePlayers, scoreTestManager } from "@/lib/scoring";
+import { generateBalancedSquads } from "@/lib/squad/dengeli";
 
 /**
  * Minimal admin trigger (Task 4): sync the test fixture so we can verify the
@@ -32,4 +33,15 @@ export async function calculatePlayerScoresAction(): Promise<void> {
 export async function createTestManagerScoreAction(): Promise<void> {
   await scoreTestManager(TEST_FIXTURE_ID);
   revalidatePath("/admin/sync");
+}
+
+/**
+ * Minimal admin trigger (Task 9): generate balanced Dengeli Başlangıç starter
+ * squads for the demo managers from existing players. Assigns initial market
+ * values if missing. Idempotent — safe to rerun.
+ */
+export async function generateDengeliSquadsAction(): Promise<void> {
+  await generateBalancedSquads();
+  revalidatePath("/admin/sync");
+  revalidatePath("/table");
 }
