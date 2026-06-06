@@ -2,7 +2,7 @@ import { isSportmonksConfigured } from "@/lib/sportmonks";
 import { getDbStatus, prisma } from "@/lib/db";
 import { TEST_FIXTURE_ID } from "@/config/constants";
 
-import { syncTestFixtureAction } from "./actions";
+import { calculatePlayerScoresAction, syncTestFixtureAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +14,13 @@ export default async function AdminSyncPage() {
   const recentLogs = db.configured
     ? await prisma.apiSyncLog.findMany({
         where: { syncType: "fixture" },
+        orderBy: { id: "desc" },
+        take: 5,
+      })
+    : [];
+
+  const recentScoringRuns = db.configured
+    ? await prisma.scoringRun.findMany({
         orderBy: { id: "desc" },
         take: 5,
       })
@@ -76,6 +83,34 @@ export default async function AdminSyncPage() {
       </div>
 
       <div className="card">
+        <span className="tag">Player scoring</span>
+        <p>
+          Calculate player match scores for fixture{" "}
+          <strong>{TEST_FIXTURE_ID}</strong> from the synced raw data.
+        </p>
+        <form action={calculatePlayerScoresAction}>
+          <button
+            type="submit"
+            disabled={!db.configured}
+            style={{
+              marginTop: 8,
+              padding: "8px 14px",
+              borderRadius: 6,
+              border: "1px solid var(--border, #333)",
+              cursor: !db.configured ? "not-allowed" : "pointer",
+            }}
+          >
+            Calculate player scores
+          </button>
+        </form>
+        <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>
+          Reads events, lineups and lineup details, then upserts{" "}
+          <code>player_match_scores</code>. No Sportmonks calls. Running it again
+          creates no duplicates.
+        </p>
+      </div>
+
+      <div className="card">
         <span className="tag">Recent fixture syncs</span>
         {recentLogs.length === 0 ? (
           <p style={{ color: "var(--muted)", fontSize: 13 }}>
@@ -105,6 +140,52 @@ export default async function AdminSyncPage() {
                     {log.finishedAt
                       ? log.finishedAt.toISOString().replace("T", " ").slice(0, 19)
                       : "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      <div className="card">
+        <span className="tag">Recent scoring runs</span>
+        {recentScoringRuns.length === 0 ? (
+          <p style={{ color: "var(--muted)", fontSize: 13 }}>
+            No scoring runs recorded yet.
+          </p>
+        ) : (
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <thead>
+              <tr style={{ textAlign: "left", color: "var(--muted)" }}>
+                <th style={{ padding: "4px 8px" }}>#</th>
+                <th style={{ padding: "4px 8px" }}>Status</th>
+                <th style={{ padding: "4px 8px" }}>Players</th>
+                <th style={{ padding: "4px 8px" }}>Finished</th>
+                <th style={{ padding: "4px 8px" }}>Error</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentScoringRuns.map((scoringRun) => (
+                <tr
+                  key={scoringRun.id}
+                  style={{ borderTop: "1px solid var(--border, #333)" }}
+                >
+                  <td style={{ padding: "4px 8px" }}>{scoringRun.id}</td>
+                  <td style={{ padding: "4px 8px" }}>{scoringRun.status}</td>
+                  <td style={{ padding: "4px 8px" }}>
+                    {scoringRun.playersScored}
+                  </td>
+                  <td style={{ padding: "4px 8px" }}>
+                    {scoringRun.finishedAt
+                      ? scoringRun.finishedAt
+                          .toISOString()
+                          .replace("T", " ")
+                          .slice(0, 19)
+                      : "—"}
+                  </td>
+                  <td style={{ padding: "4px 8px", color: "var(--muted)" }}>
+                    {scoringRun.errorMessage ?? "—"}
                   </td>
                 </tr>
               ))}

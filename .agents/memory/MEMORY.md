@@ -2,3 +2,4 @@
 - [Prisma version pinning](prisma-version-pinning.md) — pin prisma + @prisma/client to v6 (not v7) with Next 14; prisma in deps; build runs prisma generate.
 - [Replit secrets need workflow restart](replit-secrets-runtime.md) — new/changed secrets aren't seen by an already-running workflow; restart it before testing server code.
 - [Sportmonks IDs exceed 32-bit](sportmonks-id-sizes.md) — lineup/event/detail IDs overflow Postgres INT4; those unique-key columns are BigInt, pass BigInt(x) in upserts/Set keys.
+- [Scoring needs internal Player rows](scoring-player-fk.md) — player_match_scores.player_id is an internal FK; engine derives Player rows from synced lineups, don't overwrite them on rerun.

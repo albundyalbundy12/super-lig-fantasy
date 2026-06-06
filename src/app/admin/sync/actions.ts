@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { TEST_FIXTURE_ID } from "@/config/constants";
 import { syncFixture } from "@/lib/sync";
+import { scoreFixturePlayers } from "@/lib/scoring";
 
 /**
  * Minimal admin trigger (Task 4): sync the test fixture so we can verify the
@@ -11,5 +12,14 @@ import { syncFixture } from "@/lib/sync";
  */
 export async function syncTestFixtureAction(): Promise<void> {
   await syncFixture(TEST_FIXTURE_ID);
+  revalidatePath("/admin/sync");
+}
+
+/**
+ * Minimal admin trigger (Task 5): calculate player match scores for the test
+ * fixture from already-synced raw data. Idempotent — safe to run repeatedly.
+ */
+export async function calculatePlayerScoresAction(): Promise<void> {
+  await scoreFixturePlayers(TEST_FIXTURE_ID);
   revalidatePath("/admin/sync");
 }
