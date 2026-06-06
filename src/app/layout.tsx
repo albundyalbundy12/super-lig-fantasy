@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Süper Lig Fantasy",
-  description: "Otomatik Süper Lig fantezi futbol menajeri — MVP sürümü.",
+  description: "Otomatik Süper Lig fantezi futbol menajeri.",
 };
 
 export default function RootLayout({

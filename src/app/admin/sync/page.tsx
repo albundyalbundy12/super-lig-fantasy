@@ -166,11 +166,12 @@ export default async function AdminSyncPage() {
 
   return (
     <>
-      <h1>Admin · Sync</h1>
-      <p className="subtitle">
-        Control panel for Sportmonks sync and scoring (scoring controls added in
-        later tasks).
-      </p>
+      <div className="page-header">
+        <h1 className="page-title">Veri Senkronizasyonu</h1>
+        <p className="page-subtitle">
+          Sportmonks senkronizasyonu ve puan hesaplama kontrol paneli.
+        </p>
+      </div>
 
       <div className="card">
         <span className="tag">Sportmonks API</span>
