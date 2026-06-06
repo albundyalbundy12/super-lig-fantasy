@@ -8,68 +8,71 @@ export default async function TablePage() {
 
   return (
     <>
-      <h1>Lig Tablosu</h1>
-      <p className="subtitle">Özel ligindeki menajer sıralaması.</p>
+      <div className="page-header">
+        <span className="page-eyebrow">Sıralama</span>
+        <h1>Lig Tablosu</h1>
+        <p className="page-sub">Özel ligindeki menajer sıralaması.</p>
+      </div>
 
       {rows.length === 0 ? (
         <div className="card">
-          <span className="tag">Veri yok</span>
-          <p>
-            Henüz lige menajer eklenmedi. Veri Senkronizasyonu sayfasından test
-            menajeri oluşturabilirsin.
-          </p>
+          <div className="empty-state">
+            <div className="empty-ico" aria-hidden>
+              🏆
+            </div>
+            <p>
+              Henüz lige menajer eklenmedi. Veri Senkronizasyonu sayfasından
+              test menajeri oluşturabilirsin.
+            </p>
+          </div>
         </div>
       ) : (
         <div className="card">
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <table className="table">
             <thead>
-              <tr style={{ textAlign: "left", color: "var(--muted)" }}>
-                <th style={{ padding: "6px 8px" }}>Sıra</th>
-                <th style={{ padding: "6px 8px" }}>Takım / Menajer</th>
-                <th style={{ padding: "6px 8px", textAlign: "right" }}>
-                  Son Hafta Puanı
-                </th>
-                <th style={{ padding: "6px 8px", textAlign: "right" }}>
-                  Toplam Puan
-                </th>
-                <th style={{ padding: "6px 8px", textAlign: "right" }}>
-                  Kadro Değeri
-                </th>
-                <th style={{ padding: "6px 8px", textAlign: "right" }}>Bütçe</th>
+              <tr>
+                <th>Sıra</th>
+                <th>Takım</th>
+                <th className="num">Son Hafta</th>
+                <th className="num">Toplam Puan</th>
+                <th className="num">Kadro Değeri</th>
+                <th className="num">Bütçe</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row, index) => (
-                <tr
-                  key={row.teamId}
-                  style={{ borderTop: "1px solid var(--border)" }}
-                >
-                  <td style={{ padding: "6px 8px" }}>{index + 1}</td>
-                  <td style={{ padding: "6px 8px" }}>
-                    {row.teamName}
-                    <span style={{ color: "var(--muted)" }}>
-                      {" "}
-                      · {row.managerName}
+                <tr key={row.teamId}>
+                  <td>
+                    <span
+                      className={`rank-badge${index === 0 ? " top" : ""}`}
+                    >
+                      {index + 1}
                     </span>
                   </td>
-                  <td style={{ padding: "6px 8px", textAlign: "right" }}>
-                    {formatPoints(row.roundPoints)}
+                  <td>
+                    <div style={{ fontWeight: 700 }}>{row.teamName}</div>
+                    <div style={{ color: "var(--muted)", fontSize: 12 }}>
+                      {row.managerName}
+                    </div>
                   </td>
-                  <td
-                    style={{
-                      padding: "6px 8px",
-                      textAlign: "right",
-                      fontWeight: 700,
-                    }}
-                  >
+                  <td className="num">
+                    <span
+                      className={
+                        row.roundPoints > 0
+                          ? "pts pts-pos"
+                          : row.roundPoints < 0
+                            ? "pts pts-neg"
+                            : "pts pts-zero"
+                      }
+                    >
+                      {formatPoints(row.roundPoints)}
+                    </span>
+                  </td>
+                  <td className="num" style={{ fontWeight: 800 }}>
                     {formatPoints(row.pointsTotal)}
                   </td>
-                  <td style={{ padding: "6px 8px", textAlign: "right" }}>
-                    {formatTL(row.squadValue)}
-                  </td>
-                  <td style={{ padding: "6px 8px", textAlign: "right" }}>
-                    {formatTL(row.budget)}
-                  </td>
+                  <td className="num">{formatTL(row.squadValue)}</td>
+                  <td className="num">{formatTL(row.budget)}</td>
                 </tr>
               ))}
             </tbody>

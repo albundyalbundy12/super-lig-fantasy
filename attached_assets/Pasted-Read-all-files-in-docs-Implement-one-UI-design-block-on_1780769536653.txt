@@ -1,0 +1,154 @@
+Read all files in docs/.
+
+Implement one UI/design block only.
+
+Goal:
+Upgrade the existing Turkish Süper Lig fantasy manager MVP UI into a serious football-manager interface, with a visual pitch-based Diziliş page and formation monetization UI.
+
+Strict scope:
+- Do not change scoring logic.
+- Do not change Sportmonks sync logic.
+- Do not change database schema unless absolutely necessary.
+- Do not implement payments.
+- Do not implement real auth.
+- Do not implement backend Pro subscription logic yet.
+- Do not fetch Sportmonks again.
+- Do not expose SPORTMONKS_API_TOKEN.
+- Keep all user-facing UI text Turkish.
+- Keep internal route names and code identifiers unchanged unless needed.
+
+Pages to polish:
+- /dashboard
+- /squad
+- /lineup
+- /points
+- /table
+- /transfer-market
+- /admin/sync only lightly
+
+Visual direction:
+- Serious Turkish football manager product.
+- Not generic SaaS.
+- Not CRM.
+- Not betting/casino.
+- Modern, competitive, premium, mobile-first.
+- Dark navy / deep green base.
+- White or off-white cards.
+- Subtle gold accents.
+- Clear hierarchy and strong football feeling.
+
+Navigation labels:
+- Dashboard → Ana Sayfa
+- Squad → Kadrom
+- Lineup → Diziliş
+- Transfer Market → Transfer Pazarı
+- Points → Puanlar
+- Table → Lig Tablosu
+- Admin Sync → Veri Senkronizasyonu
+
+Global layout:
+- Create a better app shell/navigation.
+- Add active navigation state.
+- Improve spacing, typography, cards and page headers.
+- Keep layout responsive.
+
+Diziliş:
+The lineup must be shown visually on a football pitch, not as a plain list.
+
+Implement a data-driven pitch layout supporting at least:
+- 4-4-2
+- 4-3-3
+- 3-5-2
+- 3-4-3
+- 4-2-3-1
+- 4-5-1
+- 5-3-2
+- 5-4-1
+- 3-4-2-1
+- 4-1-4-1
+
+Formation monetization:
+Free users can use only:
+- 4-4-2
+- 4-3-3
+- 3-5-2
+
+Pro formations:
+- 3-4-3
+- 4-2-3-1
+- 4-5-1
+- 5-3-2
+- 5-4-1
+- 3-4-2-1
+- 4-1-4-1
+
+Locked Pro formations:
+- Must be visible.
+- Same size as free formation pills.
+- Disabled state.
+- Label: 🔒 Pro ile Açılır
+- muted gold, subtle, not aggressive.
+- On click/tap, open lightweight bottom sheet/modal.
+- Bottom sheet text must include:
+  Formasyon seçimi puan üretmez. Taktiksel tercih tamamen senin.
+- CTA: Pro'ya Geç
+- Dismiss: Şimdi Değil
+- No dark patterns.
+- Upgrade prompt should not feel pay-to-win.
+
+Diziliş field:
+- Show football pitch.
+- Show player chips/cards positioned by formation rows.
+- Show empty slot clearly:
+  - Boş Slot
+  - -4 Puan Riski
+- Show bench below:
+  - Yedekler
+  - bench players count as 0 points.
+
+Puanlar:
+Show player point breakdown clearly:
+- Mauro Icardi — 9 Puan
+  - Gol +3
+  - Penaltı Golü +3
+  - Rating +2
+  - Dakika +1
+
+Lig Tablosu:
+Show:
+- Sıra
+- Takım
+- Son Hafta
+- Toplam Puan
+- Kadro Değeri
+- Bütçe
+
+Transfer Pazarı:
+- Keep existing buy/sell functionality if already implemented.
+- Improve display.
+- If placeholder, show:
+  Transfer Pazarı yakında aktif olacak
+- Do not implement auction logic.
+
+Veri Senkronizasyonu:
+- Keep admin page functional.
+- Light polish only.
+- Buttons:
+  - Test Maçını Senkronize Et
+  - Oyuncu Puanlarını Hesapla
+  - Test Menajer Puanını Oluştur
+
+Verification:
+- Run typecheck.
+- Run build.
+- Verify these routes load:
+  - /dashboard
+  - /squad
+  - /lineup
+  - /points
+  - /table
+  - /transfer-market
+  - /admin/sync
+- Confirm no backend scoring/sync logic changed.
+- Confirm no token exposure.
+- Summarize changed files and visual result.

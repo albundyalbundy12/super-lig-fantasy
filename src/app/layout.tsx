@@ -15,9 +15,27 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <body>
-        <div className="app-shell">
-          <Nav />
-          <main className="content">{children}</main>
+        <div className="app">
+          <header className="topbar">
+            <div className="brand">
+              <span className="brand-badge" aria-hidden>
+                ⚽
+              </span>
+              <span className="brand-text">
+                <strong>Süper Lig Fantasy</strong>
+                <small>Menajer · MVP v0.1</small>
+              </span>
+            </div>
+            <div className="topbar-meta">
+              <span className="chip chip-gold">
+                <span className="chip-label">Sezon</span> 2025/2026
+              </span>
+            </div>
+          </header>
+          <div className="app-body">
+            <Nav />
+            <main className="content">{children}</main>
+          </div>
         </div>
       </body>
     </html>

@@ -166,36 +166,39 @@ export default async function AdminSyncPage() {
 
   return (
     <>
-      <h1>Admin · Sync</h1>
-      <p className="subtitle">
-        Control panel for Sportmonks sync and scoring (scoring controls added in
-        later tasks).
-      </p>
-
-      <div className="card">
-        <span className="tag">Sportmonks API</span>
-        <p>
-          Token configured:{" "}
-          <strong>{sportmonksReady ? "yes" : "no"}</strong>
-        </p>
-        <p style={{ color: "var(--muted)", fontSize: 13 }}>
-          Set <code>SPORTMONKS_API_TOKEN</code> in Replit Secrets. The token is
-          read server-side only and is never sent to the browser.
+      <div className="page-header">
+        <span className="page-eyebrow">Yönetim</span>
+        <h1>Veri Senkronizasyonu</h1>
+        <p className="page-sub">
+          Sportmonks veri senkronizasyonu ve puanlama kontrol paneli.
         </p>
       </div>
 
       <div className="card">
-        <span className="tag">Database</span>
+        <span className="tag">Sportmonks API</span>
         <p>
-          Connected: <strong>{db.configured ? "yes" : "no"}</strong>
+          Token tanımlı:{" "}
+          <strong>{sportmonksReady ? "evet" : "hayır"}</strong>
+        </p>
+        <p style={{ color: "var(--muted)", fontSize: 13 }}>
+          <code>SPORTMONKS_API_TOKEN</code> değerini Replit Secrets içine
+          ekle. Token yalnızca sunucu tarafında okunur ve hiçbir zaman tarayıcıya
+          gönderilmez.
+        </p>
+      </div>
+
+      <div className="card">
+        <span className="tag">Veritabanı</span>
+        <p>
+          Bağlı: <strong>{db.configured ? "evet" : "hayır"}</strong>
         </p>
         <p style={{ color: "var(--muted)", fontSize: 13 }}>{db.note}</p>
       </div>
 
       <div className="card">
-        <span className="tag">Test fixture</span>
+        <span className="tag">Test Maçı</span>
         <p>
-          Galatasaray vs Beşiktaş — fixture ID{" "}
+          Galatasaray − Beşiktaş — maç ID{" "}
           <strong>{TEST_FIXTURE_ID}</strong>.
         </p>
         <form action={syncTestFixtureAction}>
@@ -211,20 +214,20 @@ export default async function AdminSyncPage() {
                 !sportmonksReady || !db.configured ? "not-allowed" : "pointer",
             }}
           >
-            Sync test fixture
+            Test Maçını Senkronize Et
           </button>
         </form>
         <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>
-          Fetches participants, events, lineups and lineup details, then upserts
-          them into the database. Running it again creates no duplicates.
+          Katılımcıları, olayları, dizilişleri ve diziliş detaylarını çeker,
+          ardından veritabanına yazar. Tekrar çalıştırmak kopya oluşturmaz.
         </p>
       </div>
 
       <div className="card">
-        <span className="tag">Current season</span>
+        <span className="tag">Güncel Sezon</span>
         <p>
-          Süper Lig (league <strong>{SUPER_LIG_LEAGUE_ID}</strong>) — current
-          season ID <strong>{CURRENT_SEASON_ID}</strong>.
+          Süper Lig (lig <strong>{SUPER_LIG_LEAGUE_ID}</strong>) — güncel
+          sezon ID <strong>{CURRENT_SEASON_ID}</strong>.
         </p>
         <form action={syncCurrentSeasonAction}>
           <button
@@ -239,43 +242,42 @@ export default async function AdminSyncPage() {
                 !sportmonksReady || !db.configured ? "not-allowed" : "pointer",
             }}
           >
-            Sync current season
+            Güncel Sezonu Senkronize Et
           </button>
         </form>
         <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>
-          Fetches the season, its rounds and its fixtures, then upserts them.
-          Does not touch the historical test fixture. Running it again creates no
-          duplicates.
+          Sezonu, haftalarını ve maçlarını çeker, ardından veritabanına yazar.
+          Geçmiş test maçına dokunmaz. Tekrar çalıştırmak kopya oluşturmaz.
         </p>
 
         {!seasonReport || !seasonReport.exists ? (
           <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>
-            No season data yet. Click “Sync current season”.
+            Henüz sezon verisi yok. “Güncel Sezonu Senkronize Et”e tıkla.
           </p>
         ) : (
           <>
             <p style={{ marginTop: 12 }}>
               <strong>{seasonReport.season?.name ?? "—"}</strong> ·{" "}
-              {seasonReport.season?.isCurrent ? "current" : "not current"} ·{" "}
+              {seasonReport.season?.isCurrent ? "güncel" : "güncel değil"} ·{" "}
               {formatDate(seasonReport.season?.startsAt ?? null)} →{" "}
               {formatDate(seasonReport.season?.endsAt ?? null)}
             </p>
             <p style={{ fontSize: 13, color: "var(--muted)" }}>
-              Rounds stored: <strong>{seasonReport.totalRounds}</strong> ·
-              Fixtures stored: <strong>{seasonReport.totalFixtures}</strong>
+              Kayıtlı hafta: <strong>{seasonReport.totalRounds}</strong> ·
+              Kayıtlı maç: <strong>{seasonReport.totalFixtures}</strong>
             </p>
             <p style={{ fontSize: 13, marginTop: 4 }}>
-              Next round / lock:{" "}
+              Sonraki hafta / kilit:{" "}
               {seasonReport.nextRound ? (
                 <strong>
                   {seasonReport.nextRound.name
-                    ? `Round ${seasonReport.nextRound.name}`
+                    ? `Hafta ${seasonReport.nextRound.name}`
                     : `#${seasonReport.nextRound.sportmonksRoundId}`}{" "}
                   — {formatDateTime(seasonReport.nextRound.lockTime)}
                 </strong>
               ) : (
                 <em style={{ color: "var(--muted)" }}>
-                  no upcoming round (season finished)
+                  yaklaşan hafta yok (sezon bitti)
                 </em>
               )}
             </p>
@@ -291,12 +293,12 @@ export default async function AdminSyncPage() {
               >
                 <thead>
                   <tr style={{ textAlign: "left", color: "var(--muted)" }}>
-                    <th style={{ padding: "4px 8px" }}>Round</th>
-                    <th style={{ padding: "4px 8px" }}>Status</th>
+                    <th style={{ padding: "4px 8px" }}>Hafta</th>
+                    <th style={{ padding: "4px 8px" }}>Durum</th>
                     <th style={{ padding: "4px 8px", textAlign: "right" }}>
-                      Fixtures
+                      Maç
                     </th>
-                    <th style={{ padding: "4px 8px" }}>Lock time (earliest)</th>
+                    <th style={{ padding: "4px 8px" }}>Kilit zamanı (en erken)</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -325,10 +327,11 @@ export default async function AdminSyncPage() {
       </div>
 
       <div className="card">
-        <span className="tag">Player scoring</span>
+        <span className="tag">Oyuncu Puanlama</span>
         <p>
-          Calculate player match scores for fixture{" "}
-          <strong>{TEST_FIXTURE_ID}</strong> from the synced raw data.
+          Senkronize edilmiş ham veriden{" "}
+          <strong>{TEST_FIXTURE_ID}</strong> maçı için oyuncu maç puanlarını
+          hesapla.
         </p>
         <form action={calculatePlayerScoresAction}>
           <button
@@ -342,22 +345,22 @@ export default async function AdminSyncPage() {
               cursor: !db.configured ? "not-allowed" : "pointer",
             }}
           >
-            Calculate player scores
+            Oyuncu Puanlarını Hesapla
           </button>
         </form>
         <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>
-          Reads events, lineups and lineup details, then upserts{" "}
-          <code>player_match_scores</code>. No Sportmonks calls. Running it again
-          creates no duplicates.
+          Olayları, dizilişleri ve diziliş detaylarını okur, ardından{" "}
+          <code>player_match_scores</code> tablosuna yazar. Sportmonks çağrısı
+          yapılmaz. Tekrar çalıştırmak kopya oluşturmaz.
         </p>
       </div>
 
       <div className="card">
-        <span className="tag">Test manager score</span>
+        <span className="tag">Test Menajer Puanı</span>
         <p>
-          Build a simulated test manager (user, league, team, squad, lineup)
-          from real fixture players and score its round from{" "}
-          <code>player_match_scores</code>.
+          Gerçek maç oyuncularından simüle bir test menajeri (kullanıcı, lig,
+          takım, kadro, diziliş) oluşturur ve haftasını{" "}
+          <code>player_match_scores</code> üzerinden puanlar.
         </p>
         <form action={createTestManagerScoreAction}>
           <button
@@ -371,13 +374,14 @@ export default async function AdminSyncPage() {
               cursor: !db.configured ? "not-allowed" : "pointer",
             }}
           >
-            Create test manager score
+            Test Menajer Puanını Oluştur
           </button>
         </form>
         <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>
-          Empty lineup slots score {EMPTY_SLOT_POINTS}; squad players not in the
-          lineup (the bench) score 0. No Sportmonks calls. Running it again
-          creates no duplicate round scores or lineup slots.
+          Boş diziliş pozisyonları {EMPTY_SLOT_POINTS} puan alır; dizilişte
+          olmayan kadro oyuncuları (yedekler) 0 puan alır. Sportmonks çağrısı
+          yapılmaz. Tekrar çalıştırmak kopya hafta puanı veya diziliş pozisyonu
+          oluşturmaz.
         </p>
       </div>
 
@@ -469,17 +473,17 @@ export default async function AdminSyncPage() {
       </div>
 
       <div className="card">
-        <span className="tag">Latest manager score</span>
+        <span className="tag">Son Menajer Puanı</span>
         {!latestManagerScore ? (
           <p style={{ color: "var(--muted)", fontSize: 13 }}>
-            No manager score yet. Click “Create test manager score”.
+            Henüz menajer puanı yok. “Test Menajer Puanını Oluştur”a tıkla.
           </p>
         ) : (
           <>
             <p>
-              <strong>{latestManagerScore.managerTeam.name}</strong> — round
-              total <strong>{latestManagerScore.pointsTotal}</strong> pts (
-              lineup {latestManagerScore.pointsLineup}, empty slots{" "}
+              <strong>{latestManagerScore.managerTeam.name}</strong> — hafta
+              toplamı <strong>{latestManagerScore.pointsTotal}</strong> puan (
+              diziliş {latestManagerScore.pointsLineup}, boş pozisyon{" "}
               {latestManagerScore.pointsEmptySlots}).
             </p>
             <table
@@ -493,9 +497,9 @@ export default async function AdminSyncPage() {
               <thead>
                 <tr style={{ textAlign: "left", color: "var(--muted)" }}>
                   <th style={{ padding: "4px 8px" }}>#</th>
-                  <th style={{ padding: "4px 8px" }}>Pos</th>
-                  <th style={{ padding: "4px 8px" }}>Player</th>
-                  <th style={{ padding: "4px 8px" }}>Points</th>
+                  <th style={{ padding: "4px 8px" }}>Mevki</th>
+                  <th style={{ padding: "4px 8px" }}>Oyuncu</th>
+                  <th style={{ padding: "4px 8px" }}>Puan</th>
                 </tr>
               </thead>
               <tbody>
@@ -512,9 +516,9 @@ export default async function AdminSyncPage() {
                       <td style={{ padding: "4px 8px" }}>{slot.slotPosition}</td>
                       <td style={{ padding: "4px 8px" }}>
                         {slot.isEmpty ? (
-                          <em style={{ color: "var(--muted)" }}>empty slot</em>
+                          <em style={{ color: "var(--muted)" }}>boş pozisyon</em>
                         ) : (
-                          slot.player?.name ?? `Player ${slot.playerId}`
+                          slot.player?.name ?? `Oyuncu ${slot.playerId}`
                         )}
                       </td>
                       <td style={{ padding: "4px 8px" }}>{points}</td>
@@ -533,16 +537,16 @@ export default async function AdminSyncPage() {
                     marginBottom: 4,
                   }}
                 >
-                  Bank (in squad, not in lineup) — counts as 0:
+                  Yedek (kadroda, dizilişte değil) — 0 sayılır:
                 </p>
                 <table
                   style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}
                 >
                   <thead>
                     <tr style={{ textAlign: "left", color: "var(--muted)" }}>
-                      <th style={{ padding: "4px 8px" }}>Player</th>
-                      <th style={{ padding: "4px 8px" }}>Match pts</th>
-                      <th style={{ padding: "4px 8px" }}>Counted</th>
+                      <th style={{ padding: "4px 8px" }}>Oyuncu</th>
+                      <th style={{ padding: "4px 8px" }}>Maç puanı</th>
+                      <th style={{ padding: "4px 8px" }}>Sayılan</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -552,7 +556,7 @@ export default async function AdminSyncPage() {
                         style={{ borderTop: "1px solid var(--border, #333)" }}
                       >
                         <td style={{ padding: "4px 8px" }}>
-                          {sp.player?.name ?? `Player ${sp.playerId}`}
+                          {sp.player?.name ?? `Oyuncu ${sp.playerId}`}
                         </td>
                         <td style={{ padding: "4px 8px" }}>
                           {matchPointsByPlayerId.get(sp.playerId) ?? 0}
@@ -569,21 +573,21 @@ export default async function AdminSyncPage() {
       </div>
 
       <div className="card">
-        <span className="tag">Recent fixture syncs</span>
+        <span className="tag">Son Maç Senkronizasyonları</span>
         {recentLogs.length === 0 ? (
           <p style={{ color: "var(--muted)", fontSize: 13 }}>
-            No syncs recorded yet.
+            Henüz senkronizasyon kaydı yok.
           </p>
         ) : (
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
             <thead>
               <tr style={{ textAlign: "left", color: "var(--muted)" }}>
                 <th style={{ padding: "4px 8px" }}>#</th>
-                <th style={{ padding: "4px 8px" }}>Status</th>
-                <th style={{ padding: "4px 8px" }}>Fetched</th>
-                <th style={{ padding: "4px 8px" }}>Created</th>
-                <th style={{ padding: "4px 8px" }}>Updated</th>
-                <th style={{ padding: "4px 8px" }}>Finished</th>
+                <th style={{ padding: "4px 8px" }}>Durum</th>
+                <th style={{ padding: "4px 8px" }}>Çekilen</th>
+                <th style={{ padding: "4px 8px" }}>Oluşturulan</th>
+                <th style={{ padding: "4px 8px" }}>Güncellenen</th>
+                <th style={{ padding: "4px 8px" }}>Biten</th>
               </tr>
             </thead>
             <tbody>
@@ -607,20 +611,20 @@ export default async function AdminSyncPage() {
       </div>
 
       <div className="card">
-        <span className="tag">Recent scoring runs</span>
+        <span className="tag">Son Puanlama Çalışmaları</span>
         {recentScoringRuns.length === 0 ? (
           <p style={{ color: "var(--muted)", fontSize: 13 }}>
-            No scoring runs recorded yet.
+            Henüz puanlama çalışması kaydı yok.
           </p>
         ) : (
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
             <thead>
               <tr style={{ textAlign: "left", color: "var(--muted)" }}>
                 <th style={{ padding: "4px 8px" }}>#</th>
-                <th style={{ padding: "4px 8px" }}>Status</th>
-                <th style={{ padding: "4px 8px" }}>Players</th>
-                <th style={{ padding: "4px 8px" }}>Finished</th>
-                <th style={{ padding: "4px 8px" }}>Error</th>
+                <th style={{ padding: "4px 8px" }}>Durum</th>
+                <th style={{ padding: "4px 8px" }}>Oyuncu</th>
+                <th style={{ padding: "4px 8px" }}>Biten</th>
+                <th style={{ padding: "4px 8px" }}>Hata</th>
               </tr>
             </thead>
             <tbody>

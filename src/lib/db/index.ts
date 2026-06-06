@@ -41,7 +41,7 @@ export function getDbStatus(): DbStatus {
   return {
     configured,
     note: configured
-      ? "PostgreSQL connected. Schema is migrated and ready for Sportmonks sync (Task 4+)."
-      : "DATABASE_URL is not set. Add it in Replit Secrets to enable the database.",
+      ? "PostgreSQL bağlı. Şema güncel ve Sportmonks senkronizasyonu için hazır."
+      : "DATABASE_URL tanımlı değil. Veritabanını etkinleştirmek için Replit Secrets içine ekle.",
   };
 }

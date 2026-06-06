@@ -3,8 +3,6 @@ import { formatTL, positionIdLabel } from "@/lib/fantasy/format";
 
 import { buyPlayerAction, sellPlayerAction } from "./actions";
 
-export const dynamic = "force-dynamic";
-
 /** Turkish banner text for the result of the last buy/sell action. */
 function bannerFor(
   msg: string | undefined,
@@ -37,6 +35,8 @@ function bannerFor(
   }
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function TransferMarketPage({
   searchParams,
 }: {
@@ -45,17 +45,31 @@ export default async function TransferMarketPage({
   const data = await getTransferMarketData();
   const banner = bannerFor(searchParams.msg, searchParams.ad);
 
+  const header = (
+    <div className="page-header">
+      <span className="page-eyebrow">Pazar</span>
+      <h1>Transfer Pazarı</h1>
+      <p className="page-sub">Oyuncuları TL ile akıllıca al ve sat.</p>
+    </div>
+  );
+
   if (!data) {
     return (
       <>
-        <h1>Transfer Pazarı</h1>
-        <p className="subtitle">Oyuncuları TL ile al ve sat.</p>
+        {header}
         <div className="card">
-          <span className="tag">Veri yok</span>
-          <p>
-            Henüz bir menajer takımı yok. Veri Senkronizasyonu sayfasından test
-            menajeri oluşturabilirsin.
-          </p>
+          <div className="empty-state">
+            <div className="empty-ico" aria-hidden>
+              💱
+            </div>
+            <p style={{ fontWeight: 700, fontSize: 16 }}>
+              Transfer Pazarı yakında aktif olacak
+            </p>
+            <p style={{ color: "var(--muted)", marginTop: 4 }}>
+              Henüz bir menajer takımı yok. Veri Senkronizasyonu sayfasından
+              test menajeri oluşturabilirsin.
+            </p>
+          </div>
         </div>
       </>
     );
@@ -65,65 +79,66 @@ export default async function TransferMarketPage({
 
   return (
     <>
-      <h1>Transfer Pazarı</h1>
-      <p className="subtitle">Oyuncuları TL ile al ve sat.</p>
+      {header}
 
       {banner ? (
-        <div
-          className="card"
-          style={{
-            borderColor:
-              banner.tone === "ok" ? "var(--accent, #2e7d32)" : "#9a6700",
-          }}
-        >
-          <p style={{ margin: 0 }}>{banner.text}</p>
+        <div className={`banner ${banner.tone === "ok" ? "banner-ok" : "banner-warn"}`}>
+          {banner.text}
         </div>
       ) : null}
 
-      <div className="card">
-        <span className="tag">Takım</span>
-        <p>
-          <strong>{team.name}</strong> · Bütçe:{" "}
-          <strong>{formatTL(team.budget)}</strong> · Kadro: {squad.length} oyuncu
-        </p>
+      <div className="grid grid-3">
+        <div className="stat-card">
+          <div className="stat-label">Takım</div>
+          <div className="stat-value" style={{ fontSize: 20 }}>
+            {team.name}
+          </div>
+          <div className="stat-sub">{squad.length} oyuncu</div>
+        </div>
+        <div className="stat-card is-gold">
+          <div className="stat-label">Bütçe</div>
+          <div className="stat-value">{formatTL(team.budget)}</div>
+          <div className="stat-sub">Transfer için</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-label">Pazarda</div>
+          <div className="stat-value">{available.length}</div>
+          <div className="stat-sub">Alınabilir oyuncu</div>
+        </div>
       </div>
 
       <div className="card">
         <span className="tag">Kadrom</span>
         {squad.length === 0 ? (
-          <p>Kadronda oyuncu yok. Aşağıdan oyuncu satın alabilirsin.</p>
+          <p style={{ color: "var(--muted)" }}>
+            Kadronda oyuncu yok. Aşağıdan oyuncu satın alabilirsin.
+          </p>
         ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <table className="table">
             <thead>
-              <tr style={{ textAlign: "left", color: "var(--muted)" }}>
-                <th style={{ padding: "6px 8px" }}>Oyuncu</th>
-                <th style={{ padding: "6px 8px" }}>Takım</th>
-                <th style={{ padding: "6px 8px" }}>Mevki</th>
-                <th style={{ padding: "6px 8px", textAlign: "right" }}>
-                  Piyasa değeri
-                </th>
-                <th style={{ padding: "6px 8px", textAlign: "right" }}>İşlem</th>
+              <tr>
+                <th>Oyuncu</th>
+                <th>Takım</th>
+                <th>Mevki</th>
+                <th className="num">Piyasa Değeri</th>
+                <th className="num">İşlem</th>
               </tr>
             </thead>
             <tbody>
               {squad.map((sp) => (
-                <tr key={sp.id} style={{ borderTop: "1px solid var(--border)" }}>
-                  <td style={{ padding: "6px 8px" }}>
+                <tr key={sp.id}>
+                  <td style={{ fontWeight: 600 }}>
                     {sp.player.name ?? `Oyuncu #${sp.playerId}`}
                   </td>
-                  <td style={{ padding: "6px 8px" }}>
-                    {sp.player.currentTeam?.name ?? "—"}
-                  </td>
-                  <td style={{ padding: "6px 8px" }}>
-                    {positionIdLabel(sp.player.positionId)}
-                  </td>
-                  <td style={{ padding: "6px 8px", textAlign: "right" }}>
+                  <td>{sp.player.currentTeam?.name ?? "—"}</td>
+                  <td>{positionIdLabel(sp.player.positionId)}</td>
+                  <td className="num">
                     {formatTL(sp.player.currentMarketValue)}
                   </td>
-                  <td style={{ padding: "6px 8px", textAlign: "right" }}>
+                  <td className="num">
                     <form action={sellPlayerAction}>
                       <input type="hidden" name="playerId" value={sp.playerId} />
-                      <button type="submit" style={buttonStyle}>
+                      <button type="submit" className="btn btn-ghost btn-sm">
                         Sat
                       </button>
                     </form>
@@ -138,49 +153,39 @@ export default async function TransferMarketPage({
       <div className="card">
         <span className="tag">Alınabilir Oyuncular</span>
         {available.length === 0 ? (
-          <p>Pazarda alınabilir oyuncu kalmadı.</p>
+          <p style={{ color: "var(--muted)" }}>
+            Pazarda alınabilir oyuncu kalmadı.
+          </p>
         ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <table className="table">
             <thead>
-              <tr style={{ textAlign: "left", color: "var(--muted)" }}>
-                <th style={{ padding: "6px 8px" }}>Oyuncu</th>
-                <th style={{ padding: "6px 8px" }}>Takım</th>
-                <th style={{ padding: "6px 8px" }}>Mevki</th>
-                <th style={{ padding: "6px 8px", textAlign: "right" }}>
-                  Piyasa değeri
-                </th>
-                <th style={{ padding: "6px 8px", textAlign: "right" }}>İşlem</th>
+              <tr>
+                <th>Oyuncu</th>
+                <th>Takım</th>
+                <th>Mevki</th>
+                <th className="num">Piyasa Değeri</th>
+                <th className="num">İşlem</th>
               </tr>
             </thead>
             <tbody>
               {available.map((p) => {
                 const affordable = team.budget >= p.currentMarketValue;
                 return (
-                  <tr key={p.id} style={{ borderTop: "1px solid var(--border)" }}>
-                    <td style={{ padding: "6px 8px" }}>
+                  <tr key={p.id}>
+                    <td style={{ fontWeight: 600 }}>
                       {p.name ?? `Oyuncu #${p.id}`}
                     </td>
-                    <td style={{ padding: "6px 8px" }}>
-                      {p.currentTeam?.name ?? "—"}
-                    </td>
-                    <td style={{ padding: "6px 8px" }}>
-                      {positionIdLabel(p.positionId)}
-                    </td>
-                    <td style={{ padding: "6px 8px", textAlign: "right" }}>
-                      {formatTL(p.currentMarketValue)}
-                    </td>
-                    <td style={{ padding: "6px 8px", textAlign: "right" }}>
+                    <td>{p.currentTeam?.name ?? "—"}</td>
+                    <td>{positionIdLabel(p.positionId)}</td>
+                    <td className="num">{formatTL(p.currentMarketValue)}</td>
+                    <td className="num">
                       <form action={buyPlayerAction}>
                         <input type="hidden" name="playerId" value={p.id} />
                         <button
                           type="submit"
                           disabled={!affordable}
                           title={affordable ? undefined : "Bütçe yetersiz"}
-                          style={{
-                            ...buttonStyle,
-                            cursor: affordable ? "pointer" : "not-allowed",
-                            opacity: affordable ? 1 : 0.5,
-                          }}
+                          className="btn btn-primary btn-sm"
                         >
                           Al
                         </button>
@@ -196,10 +201,3 @@ export default async function TransferMarketPage({
     </>
   );
 }
-
-const buttonStyle = {
-  padding: "4px 12px",
-  borderRadius: 6,
-  border: "1px solid var(--border, #333)",
-  cursor: "pointer",
-} as const;

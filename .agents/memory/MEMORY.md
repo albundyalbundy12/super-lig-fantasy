@@ -1,8 +1,1 @@
-- [Package firewall blocks npm versions](package-firewall-next.md) — Socket firewall 403s specific package versions (e.g. next@15.x); probe tarball HTTP status and pin an allowed version.
-- [Prisma version pinning](prisma-version-pinning.md) — pin prisma + @prisma/client to v6 (not v7) with Next 14; prisma in deps; build runs prisma generate.
-- [Replit secrets need workflow restart](replit-secrets-runtime.md) — new/changed secrets aren't seen by an already-running workflow; restart it before testing server code.
-- [Sportmonks IDs exceed 32-bit](sportmonks-id-sizes.md) — lineup/event/detail IDs overflow Postgres INT4; those unique-key columns are BigInt, pass BigInt(x) in upserts/Set keys.
-- [Scoring needs internal Player rows](scoring-player-fk.md) — player_match_scores.player_id is an internal FK; engine derives Player rows from synced lineups, don't overwrite them on rerun.
-- [Manager scoring deps + round linkage](manager-scoring-deps.md) — manager scores need derived Season/Round; link fixtures→round via raw sportmonksRoundId; squad table has no unique key (delete+recreate).
-- [Testing server-only logic](testing-server-only-logic.md) — server-only modules throw under tsx/node; exercise via a throwaway api route + curl, not direct import.
-- [Transfer/squad ownership model](transfer-ownership-model.md) — player ownership is per-league (same player can be owned in different leagues); buy/sell serialized via per-league pg advisory lock + hard-delete on sell.
+- [Card palette scoping](card-palette-scoping.md) — .card re-scopes CSS vars so existing inline-styled children auto-adopt the on-light theme without per-element edits.

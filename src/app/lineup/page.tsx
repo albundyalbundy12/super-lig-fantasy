@@ -1,91 +1,88 @@
-import { getManagerRoundDetail } from "@/lib/fantasy/queries";
-import { formatPoints, slotPositionLabel } from "@/lib/fantasy/format";
+import { getManagerRoundDetail, getManagerSquad } from "@/lib/fantasy/queries";
 import { EMPTY_SLOT_POINTS } from "@/lib/scoring/rules";
+import {
+  Pitch,
+  type BenchPlayer,
+  type PitchPlayer,
+} from "@/components/pitch";
+import type { PositionCat } from "@/components/formations";
 
 export const dynamic = "force-dynamic";
 
+function slotCat(code: string): PositionCat {
+  switch (code) {
+    case "GK":
+    case "DEF":
+    case "MID":
+    case "FWD":
+      return code;
+    default:
+      return "MID";
+  }
+}
+
+function positionIdCat(positionId: number | null): PositionCat {
+  switch (positionId) {
+    case 24:
+      return "GK";
+    case 25:
+      return "DEF";
+    case 26:
+      return "MID";
+    case 27:
+      return "FWD";
+    default:
+      return "MID";
+  }
+}
+
 export default async function LineupPage() {
-  const detail = await getManagerRoundDetail();
+  const [detail, squadData] = await Promise.all([
+    getManagerRoundDetail(),
+    getManagerSquad(),
+  ]);
   const slots = detail?.lineup?.slots ?? [];
+
+  const startingXI: PitchPlayer[] = slots
+    .filter((s) => s.playerId !== null && s.player !== null)
+    .map((s) => ({
+      playerId: s.playerId!,
+      name: s.player?.name ?? `Oyuncu #${s.playerId}`,
+      cat: slotCat(s.slotPosition),
+      points: detail?.scoreByPlayerId.get(s.playerId!)?.pointsTotal ?? 0,
+    }));
+
+  const squad: BenchPlayer[] = (squadData?.squad ?? []).map((sp) => ({
+    playerId: sp.playerId,
+    name: sp.player.name ?? `Oyuncu #${sp.playerId}`,
+    cat: positionIdCat(sp.player.positionId),
+  }));
 
   return (
     <>
-      <h1>Diziliş</h1>
-      <p className="subtitle">
-        İlk on bir (MVP için 4-4-2). Boş pozisyonlar {EMPTY_SLOT_POINTS} puan.
-      </p>
+      <div className="page-header">
+        <span className="page-eyebrow">Taktik</span>
+        <h1>Diziliş</h1>
+        <p className="page-sub">
+          İlk on birini sahada kur. Boş pozisyonlar her biri {EMPTY_SLOT_POINTS}{" "}
+          puan risk taşır. Formasyon seçimi taktikseldir, puanı etkilemez.
+        </p>
+      </div>
 
       {!detail || slots.length === 0 ? (
         <div className="card">
-          <span className="tag">Veri yok</span>
-          <p>
-            Henüz diziliş oluşturulmadı. Veri Senkronizasyonu sayfasından test
-            menajeri oluşturabilirsin.
-          </p>
+          <div className="empty-state">
+            <div className="empty-ico" aria-hidden>
+              📋
+            </div>
+            <p>
+              Henüz diziliş oluşturulmadı. Veri Senkronizasyonu sayfasından test
+              menajeri oluşturabilirsin.
+            </p>
+          </div>
         </div>
       ) : (
-        <div className="card">
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ textAlign: "left", color: "var(--muted)" }}>
-                <th style={{ padding: "6px 8px" }}>Mevki</th>
-                <th style={{ padding: "6px 8px" }}>Oyuncu</th>
-                <th style={{ padding: "6px 8px", textAlign: "right" }}>Puan</th>
-              </tr>
-            </thead>
-            <tbody>
-              {slots.map((slot) => {
-                const isEmpty = slot.playerId === null || slot.player === null;
-                const points = isEmpty
-                  ? EMPTY_SLOT_POINTS
-                  : (detail.scoreByPlayerId.get(slot.playerId!)?.pointsTotal ??
-                    0);
-                return (
-                  <tr
-                    key={slot.id}
-                    style={{ borderTop: "1px solid var(--border)" }}
-                  >
-                    <td style={{ padding: "6px 8px" }}>
-                      {slotPositionLabel(slot.slotPosition)}
-                    </td>
-                    <td
-                      style={{
-                        padding: "6px 8px",
-                        color: isEmpty ? "var(--muted)" : "var(--text)",
-                      }}
-                    >
-                      {isEmpty
-                        ? "Boş pozisyon"
-                        : (slot.player?.name ?? `Oyuncu #${slot.playerId}`)}
-                    </td>
-                    <td style={{ padding: "6px 8px", textAlign: "right" }}>
-                      {formatPoints(points)}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-            <tfoot>
-              <tr style={{ borderTop: "1px solid var(--border)" }}>
-                <td
-                  colSpan={2}
-                  style={{ padding: "6px 8px", fontWeight: 700 }}
-                >
-                  Toplam
-                </td>
-                <td
-                  style={{
-                    padding: "6px 8px",
-                    textAlign: "right",
-                    fontWeight: 700,
-                  }}
-                >
-                  {formatPoints(detail.roundScore.pointsTotal)}
-                </td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
+        <Pitch startingXI={startingXI} squad={squad} />
       )}
     </>
   );
