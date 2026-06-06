@@ -1,13 +1,13 @@
 import Link from "next/link";
 
 const LINKS = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/squad", label: "Squad" },
-  { href: "/lineup", label: "Lineup" },
-  { href: "/transfer-market", label: "Transfer Market" },
-  { href: "/points", label: "Points" },
-  { href: "/table", label: "Table" },
-  { href: "/admin/sync", label: "Admin · Sync" },
+  { href: "/dashboard", label: "Ana Sayfa" },
+  { href: "/squad", label: "Kadrom" },
+  { href: "/lineup", label: "Diziliş" },
+  { href: "/transfer-market", label: "Transfer Pazarı" },
+  { href: "/points", label: "Puanlar" },
+  { href: "/table", label: "Lig Tablosu" },
+  { href: "/admin/sync", label: "Veri Senkronizasyonu" },
 ];
 
 export function Nav() {
@@ -15,7 +15,7 @@ export function Nav() {
     <aside className="sidebar">
       <div className="brand">
         Süper Lig Fantasy
-        <small>MVP scaffold · v0.1</small>
+        <small>MVP sürümü · v0.1</small>
       </div>
       <nav>
         <ul className="nav">

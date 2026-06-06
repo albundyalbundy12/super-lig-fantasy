@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Süper Lig Fantasy",
-  description: "Automated Süper Lig fantasy football manager — MVP scaffold.",
+  description: "Otomatik Süper Lig fantezi futbol menajeri — MVP sürümü.",
 };
 
 export default function RootLayout({
@@ -13,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="tr">
       <body>
         <div className="app-shell">
           <Nav />

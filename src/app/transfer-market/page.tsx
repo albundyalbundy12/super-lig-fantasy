@@ -1,13 +1,13 @@
 export default function TransferMarketPage() {
   return (
     <>
-      <h1>Transfer Market</h1>
-      <p className="subtitle">Buy and sell players in TL.</p>
+      <h1>Transfer Pazarı</h1>
+      <p className="subtitle">Oyuncuları TL ile al ve sat.</p>
       <div className="card">
-        <span className="tag">Placeholder</span>
+        <span className="tag">Henüz aktif değil</span>
         <p>
-          Will list unowned players and allow buy/sell against your budget. No
-          data wired up yet.
+          Transfer pazarı bu sürümde henüz aktif değil. İlerleyen aşamalarda
+          oyuncu alım/satımı ve bütçe yönetimi burada olacak.
         </p>
       </div>
     </>
