@@ -302,7 +302,7 @@ model FixtureParticipant {
 
 model FixtureEvent {
   id                Int      @id @default(autoincrement())
-  sportmonksEventId Int      @unique @map("sportmonks_event_id")
+  sportmonksEventId BigInt   @unique @map("sportmonks_event_id")
   fixtureId         Int      @map("fixture_id")
   teamId            Int?     @map("team_id")
   playerId          Int?     @map("player_id")
@@ -325,7 +325,7 @@ model FixtureEvent {
 
 model FixtureLineup {
   id                 Int      @id @default(autoincrement())
-  sportmonksLineupId Int      @unique @map("sportmonks_lineup_id")
+  sportmonksLineupId BigInt   @unique @map("sportmonks_lineup_id")
   fixtureId          Int      @map("fixture_id")
   playerId           Int?     @map("player_id")
   teamId             Int?     @map("team_id")
@@ -348,7 +348,7 @@ model FixtureLineup {
 
 model FixtureLineupDetail {
   id                 Int      @id @default(autoincrement())
-  sportmonksDetailId Int      @unique @map("sportmonks_detail_id")
+  sportmonksDetailId BigInt   @unique @map("sportmonks_detail_id")
   fixtureId          Int      @map("fixture_id")
   lineupId           Int?     @map("lineup_id")
   playerId           Int?     @map("player_id")
