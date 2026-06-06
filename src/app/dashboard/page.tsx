@@ -7,131 +7,228 @@ export const dynamic = "force-dynamic";
 export default async function DashboardPage() {
   const detail = await getManagerRoundDetail();
 
+  // ── No data state ────────────────────────────────────────
   if (!detail) {
     return (
       <>
-        <div className="page-header">
-          <h1 className="page-title">Ana Sayfa</h1>
-          <p className="page-subtitle">Menajer takımının özeti.</p>
+        <div className="cockpit">
+          <div className="cockpit-header">
+            <div>
+              <div className="cockpit-team">Süper Lig Fantasy</div>
+              <div className="cockpit-league">Menajer kurulmadı</div>
+            </div>
+          </div>
+
+          <div className="cockpit-pts">
+            <div className="cockpit-pts-num" style={{ color: "var(--t3)", fontSize: 40 }}>
+              —
+            </div>
+            <div className="cockpit-pts-label">Henüz puan yok</div>
+          </div>
         </div>
-        <div className="card">
-          <div className="card-title">Veri Yok</div>
-          <p style={{ marginTop: 10, color: "var(--text-secondary)", fontSize: 14 }}>
-            Henüz menajer puanı oluşturulmadı.{" "}
-            <Link href="/admin/sync" style={{ color: "var(--accent-gold)" }}>
-              Veri Senkronizasyonu
-            </Link>{" "}
-            sayfasından test menajer puanını oluşturabilirsin.
-          </p>
+
+        <div className="section">
+          <div
+            className="card"
+            style={{
+              padding: "20px 20px",
+              borderColor: "rgba(201,162,39,0.25)",
+              background: "rgba(201,162,39,0.06)",
+            }}
+          >
+            <div
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: "var(--gold)",
+                marginBottom: 8,
+              }}
+            >
+              Başlamak için
+            </div>
+            <p style={{ color: "var(--t2)", fontSize: 13, lineHeight: 1.7 }}>
+              Test menajer puanını oluşturmak için{" "}
+              <Link href="/admin/sync" style={{ color: "var(--gold)" }}>
+                Veri Senkronizasyonu
+              </Link>{" "}
+              sayfasına git. Fixture senkronizasyonu → Oyuncu puanları → Test menajer
+              adımlarını çalıştır.
+            </p>
+          </div>
         </div>
       </>
     );
   }
 
+  // ── With data ────────────────────────────────────────────
   const { roundScore } = detail;
-  const teamName = roundScore.managerTeam.name;
+  const teamName   = roundScore.managerTeam.name;
   const leagueName = roundScore.managerTeam.league.name;
-  const budget = roundScore.managerTeam.budget;
+  const budget     = roundScore.managerTeam.budget;
   const squadValue = roundScore.managerTeam.squadValue;
-  const thisWeek = roundScore.pointsTotal;
-  const emptyPenalty = roundScore.pointsEmptySlots;
+  const thisWeek   = roundScore.pointsTotal;
+  const lineupPts  = roundScore.pointsLineup;
+  const emptyPts   = roundScore.pointsEmptySlots;
+
+  // Lineup completeness: count empty slots
+  const slots        = detail.lineup?.slots ?? [];
+  const totalSlots   = slots.length;
+  const emptySlots   = slots.filter((s) => s.playerId === null || s.isEmpty).length;
+  const lineupFull   = emptySlots === 0;
+  const lineupStatus = lineupFull
+    ? "Diziliş Hazır"
+    : `${emptySlots} boş pozisyon`;
 
   return (
     <>
-      <div className="page-header">
-        <h1 className="page-title">{teamName}</h1>
-        <p className="page-subtitle">{leagueName}</p>
-      </div>
-
-      {/* Stats row */}
-      <div className="stat-row" style={{ marginBottom: 16 }}>
-        <div className="stat-card">
-          <div className="stat-label">Bu Hafta</div>
-          <div className="stat-value">{thisWeek}</div>
-          <div className="stat-sub">puan</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-label">Bütçe</div>
-          <div className="stat-value" style={{ fontSize: 16, paddingTop: 6 }}>
-            {formatTL(budget)}
-          </div>
-          <div className="stat-sub">mevcut</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-label">Kadro Değeri</div>
-          <div className="stat-value" style={{ fontSize: 16, paddingTop: 6 }}>
-            {formatTL(squadValue)}
-          </div>
-          <div className="stat-sub">piyasa</div>
-        </div>
-      </div>
-
-      {/* Breakdown card */}
-      <div className="card">
-        <div className="card-header">
-          <div className="card-title">Puan Dökümü</div>
-        </div>
-        <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+      {/* ── Cockpit hero ─────────────────────────────────── */}
+      <div className="cockpit">
+        <div className="cockpit-header">
           <div>
-            <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 2 }}>
-              Diziliş Puanı
-            </div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: "var(--accent-lime)" }}>
-              {formatPoints(roundScore.pointsLineup)}
-            </div>
+            <div className="cockpit-team">{teamName}</div>
+            <div className="cockpit-league">{leagueName}</div>
           </div>
-          {emptyPenalty < 0 && (
-            <div>
-              <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 2 }}>
-                Boş Pozisyon Cezası
-              </div>
-              <div style={{ fontSize: 20, fontWeight: 700, color: "var(--accent-red)" }}>
-                {formatPoints(emptyPenalty)}
-              </div>
-            </div>
-          )}
-          <div>
-            <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 2 }}>
-              Toplam
-            </div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: "var(--accent-gold)" }}>
-              {formatPoints(thisWeek)}
+          <div className="cockpit-week">
+            <div className="cockpit-week-label">Haftaya Hazır mısın?</div>
+            <div className="cockpit-week-val">
+              {lineupFull ? (
+                <span style={{ color: "var(--lime)" }}>✓ Hazır</span>
+              ) : (
+                <span style={{ color: "var(--gold)" }}>{lineupStatus}</span>
+              )}
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Quick actions */}
-      <div className="card">
-        <div className="card-header">
-          <div className="card-title">Hızlı Erişim</div>
+        {/* Big number */}
+        <div className="cockpit-pts">
+          <div
+            className="cockpit-pts-num"
+            style={{ color: thisWeek < 0 ? "var(--red)" : "var(--gold)" }}
+          >
+            {thisWeek}
+          </div>
+          <div className="cockpit-pts-label">Bu Haftanın Puanı</div>
         </div>
-        <div className="quick-actions" style={{ marginTop: 12 }}>
-          <Link href="/lineup" className="quick-action primary">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <circle cx="12" cy="12" r="10" />
-              <path strokeLinecap="round" d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
-            </svg>
+
+        {/* 4-cell stat bar */}
+        <div className="cockpit-stats">
+          <div className="cockpit-stat">
+            <div
+              className="cockpit-stat-val"
+              style={{ color: lineupPts > 0 ? "var(--lime)" : "var(--t1)" }}
+            >
+              {formatPoints(lineupPts)}
+            </div>
+            <div className="cockpit-stat-label">Diziliş</div>
+          </div>
+          <div className="cockpit-stat">
+            <div
+              className="cockpit-stat-val"
+              style={{ color: emptyPts < 0 ? "var(--red)" : "var(--t3)" }}
+            >
+              {emptyPts < 0 ? formatPoints(emptyPts) : "—"}
+            </div>
+            <div className="cockpit-stat-label">Boş Ceza</div>
+          </div>
+          <div className="cockpit-stat">
+            <div className="cockpit-stat-val" style={{ fontSize: 14, paddingTop: 2 }}>
+              {formatTL(budget)}
+            </div>
+            <div className="cockpit-stat-label">Bütçe</div>
+          </div>
+          <div className="cockpit-stat">
+            <div className="cockpit-stat-val" style={{ fontSize: 14, paddingTop: 2 }}>
+              {formatTL(squadValue)}
+            </div>
+            <div className="cockpit-stat-label">Kadro Değeri</div>
+          </div>
+        </div>
+
+        {/* Quick actions */}
+        <div className="cockpit-actions">
+          <Link href="/lineup" className="cockpit-action-primary">
             Dizilişi Kontrol Et
           </Link>
-          <Link href="/transfer-market" className="quick-action">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-            </svg>
+          <Link href="/transfer-market" className="cockpit-action-secondary">
             Transfer Pazarı
           </Link>
-          <Link href="/points" className="quick-action">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-            Puanları İncele
+          <Link href="/points" className="cockpit-action-secondary">
+            Puanlar
           </Link>
-          <Link href="/table" className="quick-action">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
-            Lig Tablosu
-          </Link>
+        </div>
+      </div>
+
+      {/* ── Status strip ─────────────────────────────────── */}
+      <div className="section" style={{ paddingBottom: 0 }}>
+        <div style={{ display: "flex", gap: 10 }}>
+          {/* Lineup status */}
+          <div
+            className="card"
+            style={{
+              flex: 1,
+              padding: "14px 16px",
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              marginBottom: 0,
+            }}
+          >
+            <span
+              className="dot"
+              style={{ background: lineupFull ? "var(--lime)" : "var(--gold)" }}
+            />
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: lineupFull ? "var(--lime)" : "var(--gold)" }}>
+                Diziliş
+              </div>
+              <div style={{ fontSize: 12, color: "var(--t2)", marginTop: 1 }}>
+                {lineupFull
+                  ? `${totalSlots}/${totalSlots} pozisyon dolu`
+                  : `${totalSlots - emptySlots}/${totalSlots} pozisyon dolu`}
+              </div>
+            </div>
+          </div>
+
+          {/* Budget status */}
+          <div
+            className="card"
+            style={{
+              flex: 1,
+              padding: "14px 16px",
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              marginBottom: 0,
+            }}
+          >
+            <span className="dot dot-ok" />
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "var(--lime)" }}>
+                Bütçe
+              </div>
+              <div style={{ fontSize: 12, color: "var(--t2)", marginTop: 1 }}>
+                {formatTL(budget)} kalan
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Quick nav tiles ───────────────────────────────── */}
+      <div className="section">
+        <div className="section-header">
+          <div className="section-title">Hızlı Erişim</div>
+        </div>
+        <div className="quick-links">
+          <Link href="/squad" className="quick-link">Kadrom</Link>
+          <Link href="/lineup" className="quick-link">Diziliş</Link>
+          <Link href="/transfer-market" className="quick-link">Transfer Pazarı</Link>
+          <Link href="/points" className="quick-link">Puanlar</Link>
+          <Link href="/table" className="quick-link">Lig Tablosu</Link>
         </div>
       </div>
     </>

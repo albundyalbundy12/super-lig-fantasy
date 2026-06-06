@@ -3,128 +3,128 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const MAIN_LINKS = [
-  {
-    href: "/dashboard",
-    label: "Ana Sayfa",
-    shortLabel: "Ana",
-    icon: (
-      <svg className="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-      </svg>
-    ),
-  },
-  {
-    href: "/squad",
-    label: "Kadrom",
-    shortLabel: "Kadro",
-    icon: (
-      <svg className="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-    ),
-  },
-  {
-    href: "/lineup",
-    label: "Diziliş",
-    shortLabel: "Diziliş",
-    icon: (
-      <svg className="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-        <circle cx="12" cy="12" r="10" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
-        <path strokeLinecap="round" d="M2 12h20" />
-      </svg>
-    ),
-  },
-  {
-    href: "/transfer-market",
-    label: "Transfer Pazarı",
-    shortLabel: "Pazar",
-    icon: (
-      <svg className="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-      </svg>
-    ),
-  },
-  {
-    href: "/points",
-    label: "Puanlar",
-    shortLabel: "Puan",
-    icon: (
-      <svg className="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-      </svg>
-    ),
-  },
-  {
-    href: "/table",
-    label: "Lig Tablosu",
-    shortLabel: "Tablo",
-    icon: (
-      <svg className="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-      </svg>
-    ),
-  },
+// Simple, minimal geometric SVG icons — not emoji, not Font Awesome clones.
+// Each is 20×20, single colour, stroke-based, visually clean.
+
+const IconHome = () => (
+  <svg className="nav-icon" viewBox="0 0 20 20" fill="none">
+    <path d="M3 9.5L10 3l7 6.5V17a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+    <path d="M7 18v-6h6v6" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+  </svg>
+);
+
+const IconSquad = () => (
+  <svg className="nav-icon" viewBox="0 0 20 20" fill="none">
+    <circle cx="7" cy="7" r="3" stroke="currentColor" strokeWidth="1.5"/>
+    <circle cx="14" cy="6" r="2.2" stroke="currentColor" strokeWidth="1.5"/>
+    <path d="M1 16.5c0-2.5 2.7-4 6-4s6 1.5 6 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    <path d="M14 12c1.7 0 4 .9 4 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+  </svg>
+);
+
+const IconPitch = () => (
+  <svg className="nav-icon" viewBox="0 0 20 20" fill="none">
+    <rect x="2" y="3" width="16" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+    <line x1="10" y1="3" x2="10" y2="17" stroke="currentColor" strokeWidth="1.5"/>
+    <circle cx="10" cy="10" r="2.5" stroke="currentColor" strokeWidth="1.5"/>
+    <path d="M2 7h2.5v6H2M18 7h-2.5v6H18" stroke="currentColor" strokeWidth="1.2"/>
+  </svg>
+);
+
+const IconTransfer = () => (
+  <svg className="nav-icon" viewBox="0 0 20 20" fill="none">
+    <path d="M4 7h12M13 4l3 3-3 3M16 13H4m0 0l3 3m-3-3l3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+const IconPoints = () => (
+  <svg className="nav-icon" viewBox="0 0 20 20" fill="none">
+    <rect x="3" y="13" width="3" height="5" rx="1" stroke="currentColor" strokeWidth="1.4"/>
+    <rect x="8.5" y="9" width="3" height="9" rx="1" stroke="currentColor" strokeWidth="1.4"/>
+    <rect x="14" y="5" width="3" height="13" rx="1" stroke="currentColor" strokeWidth="1.4"/>
+    <path d="M4.5 12L9 7.5l4.5 3 3-5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+const IconTable = () => (
+  <svg className="nav-icon" viewBox="0 0 20 20" fill="none">
+    <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    <path d="M7 3v14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+  </svg>
+);
+
+const IconSync = () => (
+  <svg className="nav-icon" viewBox="0 0 20 20" fill="none">
+    <path d="M17 10A7 7 0 114.3 5.3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    <path d="M4 2v4h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+// Football pitch logo mark
+const LogoMark = () => (
+  <svg viewBox="0 0 18 18" fill="currentColor">
+    <rect x="1" y="3" width="16" height="12" rx="1.5" fill="none" stroke="currentColor" strokeWidth="1.8"/>
+    <line x1="9" y1="3" x2="9" y2="15" stroke="currentColor" strokeWidth="1.6"/>
+    <circle cx="9" cy="9" r="2.4" fill="none" stroke="currentColor" strokeWidth="1.5"/>
+  </svg>
+);
+
+const MAIN_NAV = [
+  { href: "/dashboard",       label: "Ana Sayfa",       short: "Ana",    Icon: IconHome },
+  { href: "/squad",           label: "Kadrom",           short: "Kadro",  Icon: IconSquad },
+  { href: "/lineup",          label: "Diziliş",          short: "Diziliş",Icon: IconPitch },
+  { href: "/transfer-market", label: "Transfer Pazarı",  short: "Pazar",  Icon: IconTransfer },
+  { href: "/points",          label: "Puanlar",          short: "Puan",   Icon: IconPoints },
+  { href: "/table",           label: "Lig Tablosu",      short: "Tablo",  Icon: IconTable },
 ];
 
-const ADMIN_LINKS = [
-  {
-    href: "/admin/sync",
-    label: "Veri Senkronizasyonu",
-    icon: (
-      <svg className="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-      </svg>
-    ),
-  },
+const ADMIN_NAV = [
+  { href: "/admin/sync", label: "Veri Senkronizasyonu", short: "Sync", Icon: IconSync },
 ];
-
-// Bottom nav shows only the 5 most important links
-const BOTTOM_NAV_LINKS = MAIN_LINKS.slice(0, 5);
 
 export function Nav() {
   const pathname = usePathname();
 
-  function isActive(href: string) {
-    return pathname === href || pathname.startsWith(href + "/");
-  }
+  const active = (href: string) =>
+    pathname === href || (href !== "/" && pathname.startsWith(href + "/"));
 
   return (
     <>
-      {/* Desktop sidebar */}
+      {/* ── Desktop sidebar ───────────────────────────────── */}
       <aside className="sidebar">
         <div className="sidebar-brand">
-          <div className="sidebar-brand-name">Süper Lig<br />Fantasy</div>
-          <div className="sidebar-brand-sub">MVP · v0.1</div>
+          <div className="sidebar-logo">
+            <div className="sidebar-logo-mark">
+              <LogoMark />
+            </div>
+            <div className="sidebar-wordmark">
+              Süper Lig
+              <span>Fantasy Manager</span>
+            </div>
+          </div>
         </div>
+
         <nav className="sidebar-nav">
           <ul>
-            {MAIN_LINKS.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className={`nav-link${isActive(link.href) ? " active" : ""}`}
-                >
-                  {link.icon}
-                  {link.label}
+            {MAIN_NAV.map(({ href, label, Icon }) => (
+              <li key={href}>
+                <Link href={href} className={`nav-link${active(href) ? " active" : ""}`}>
+                  <Icon />
+                  {label}
                 </Link>
               </li>
             ))}
           </ul>
 
-          <div className="divider" />
-          <div className="nav-section-label">Admin</div>
+          <div className="nav-sep" />
+          <div className="nav-group-label">Admin</div>
 
           <ul>
-            {ADMIN_LINKS.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className={`nav-link${isActive(link.href) ? " active" : ""}`}
-                >
-                  {link.icon}
-                  {link.label}
+            {ADMIN_NAV.map(({ href, label, Icon }) => (
+              <li key={href}>
+                <Link href={href} className={`nav-link${active(href) ? " active" : ""}`}>
+                  <Icon />
+                  {label}
                 </Link>
               </li>
             ))}
@@ -132,21 +132,23 @@ export function Nav() {
         </nav>
       </aside>
 
-      {/* Mobile top bar */}
+      {/* ── Mobile top bar ────────────────────────────────── */}
       <header className="topbar">
-        <span className="topbar-brand">Süper Lig Fantasy</span>
+        <span className="topbar-brand">
+          Süper Lig <span>Fantasy</span>
+        </span>
       </header>
 
-      {/* Mobile bottom navigation */}
+      {/* ── Mobile bottom nav (5 items) ───────────────────── */}
       <nav className="bottomnav">
-        {BOTTOM_NAV_LINKS.map((link) => (
+        {MAIN_NAV.slice(0, 5).map(({ href, short, Icon }) => (
           <Link
-            key={link.href}
-            href={link.href}
-            className={`bottomnav-item${isActive(link.href) ? " active" : ""}`}
+            key={href}
+            href={href}
+            className={`bottomnav-item${active(href) ? " active" : ""}`}
           >
-            {link.icon}
-            <span>{link.shortLabel}</span>
+            <Icon />
+            <span>{short}</span>
           </Link>
         ))}
       </nav>

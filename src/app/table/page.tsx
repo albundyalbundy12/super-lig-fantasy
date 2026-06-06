@@ -1,14 +1,8 @@
+import type { ReactNode } from "react";
 import { getLeagueTable } from "@/lib/fantasy/queries";
 import { formatPoints, formatTL } from "@/lib/fantasy/format";
 
 export const dynamic = "force-dynamic";
-
-function rankBadgeClass(rank: number): string {
-  if (rank === 1) return "badge badge-rank1";
-  if (rank === 2) return "badge badge-rank2";
-  if (rank === 3) return "badge badge-rank3";
-  return "table-rank";
-}
 
 function initials(name: string | null | undefined): string {
   if (!name) return "?";
@@ -24,15 +18,14 @@ export default async function TablePage() {
     return (
       <>
         <div className="page-header">
-          <h1 className="page-title">Lig Tablosu</h1>
-          <p className="page-subtitle">Özel ligindeki menajer sıralaması.</p>
+          <div className="page-title">Lig Tablosu</div>
+          <div className="page-subtitle">Özel ligindeki menajer sıralaması.</div>
         </div>
-        <div className="card">
-          <div className="card-title">Veri Yok</div>
-          <p style={{ marginTop: 10, color: "var(--text-secondary)", fontSize: 14 }}>
+        <div className="section">
+          <div className="card" style={{ padding: "20px", color: "var(--t2)", fontSize: 13 }}>
             Henüz lige menajer eklenmedi. Veri Senkronizasyonu sayfasından test
             menajeri oluşturabilirsin.
-          </p>
+          </div>
         </div>
       </>
     );
@@ -40,92 +33,136 @@ export default async function TablePage() {
 
   return (
     <>
+      {/* Header */}
       <div className="page-header">
-        <h1 className="page-title">Lig Tablosu</h1>
-        <p className="page-subtitle">
+        <div className="page-title">Lig Tablosu</div>
+        <div className="page-subtitle">
           {rows.length} menajer · Toplam puana göre sıralı
-        </p>
+        </div>
       </div>
 
-      <div className="card" style={{ padding: 0 }}>
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th style={{ paddingLeft: 20, width: 48 }}>Sıra</th>
-              <th>Takım</th>
-              <th className="right">Son Hafta</th>
-              <th className="right">Toplam Puan</th>
-              <th className="right" style={{ display: "none" }}>
-                Kadro Değeri
-              </th>
-              <th className="right" style={{ paddingRight: 20 }}>Bütçe</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, index) => {
-              const rank = index + 1;
-              return (
-                <tr key={row.teamId}>
-                  <td style={{ paddingLeft: 20 }}>
-                    {rank <= 3 ? (
-                      <span className={rankBadgeClass(rank)}>{rank}</span>
-                    ) : (
-                      <span className="table-rank">{rank}</span>
-                    )}
-                  </td>
-                  <td>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <div className="player-row-avatar" style={{ width: 32, height: 32, fontSize: 11 }}>
-                        {initials(row.teamName)}
-                      </div>
-                      <div>
-                        <div style={{ fontWeight: 600, fontSize: 13.5 }}>
-                          {row.teamName}
-                        </div>
-                        <div style={{ fontSize: 11, color: "var(--text-muted)" }}>
-                          {row.managerName}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="right">
-                    <span
-                      className={`badge ${row.roundPoints > 0 ? "badge-lime" : "badge-muted"}`}
-                    >
-                      {formatPoints(row.roundPoints)}
-                    </span>
-                  </td>
-                  <td className="right">
-                    <span style={{ fontWeight: 700, fontSize: 15, color: "var(--accent-gold)" }}>
-                      {row.pointsTotal}
-                    </span>
-                  </td>
-                  <td
-                    className="right"
-                    style={{ paddingRight: 20, color: "var(--text-secondary)", fontSize: 12 }}
-                  >
-                    {formatTL(row.budget)}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      {/* Table */}
+      <div className="section">
+        <div className="card" style={{ padding: 0 }}>
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th style={{ paddingLeft: 16, width: 44, textAlign: "center" }}>#</th>
+                <th>Takım</th>
+                <th className="r">Bu Hafta</th>
+                <th className="r" style={{ paddingRight: 16 }}>Toplam</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, index) => {
+                const rank = index + 1;
 
-      {/* Legend */}
-      <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginTop: 10 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "var(--text-muted)" }}>
-          <span className="badge badge-rank1" style={{ fontSize: 10, padding: "1px 6px" }}>1</span>
-          <span>Birinci</span>
+                let rankEl: ReactNode;
+                if (rank === 1) {
+                  rankEl = (
+                    <span className="badge badge-rank1" style={{ padding: "2px 8px", borderRadius: 6 }}>
+                      1
+                    </span>
+                  );
+                } else if (rank === 2) {
+                  rankEl = (
+                    <span className="badge badge-rank2" style={{ padding: "2px 8px", borderRadius: 6 }}>
+                      2
+                    </span>
+                  );
+                } else if (rank === 3) {
+                  rankEl = (
+                    <span className="badge badge-rank3" style={{ padding: "2px 8px", borderRadius: 6 }}>
+                      3
+                    </span>
+                  );
+                } else {
+                  rankEl = (
+                    <span className="rank-cell">{rank}</span>
+                  );
+                }
+
+                return (
+                  <tr key={row.teamId}>
+                    {/* Rank */}
+                    <td style={{ paddingLeft: 16, textAlign: "center" }}>
+                      {rankEl}
+                    </td>
+
+                    {/* Team + manager */}
+                    <td>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <div className="avatar sm">{initials(row.teamName)}</div>
+                        <div>
+                          <div
+                            style={{
+                              fontSize: 13,
+                              fontWeight: 600,
+                              color: "var(--t1)",
+                              lineHeight: 1.3,
+                            }}
+                          >
+                            {row.teamName}
+                          </div>
+                          <div style={{ fontSize: 11, color: "var(--t3)", marginTop: 1 }}>
+                            {row.managerName}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Weekly points badge */}
+                    <td className="r">
+                      <span
+                        className={`badge ${
+                          row.roundPoints > 0
+                            ? "badge-lime"
+                            : row.roundPoints < 0
+                            ? "badge-red"
+                            : "badge-muted"
+                        }`}
+                      >
+                        {formatPoints(row.roundPoints)}
+                      </span>
+                    </td>
+
+                    {/* Total points in gold display font */}
+                    <td className="r" style={{ paddingRight: 16 }}>
+                      <span
+                        style={{
+                          fontFamily: "var(--font-display)",
+                          fontSize: 18,
+                          fontWeight: 800,
+                          color: row.pointsTotal > 0 ? "var(--gold)" : "var(--t3)",
+                        }}
+                      >
+                        {row.pointsTotal}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "var(--text-muted)" }}>
-          <span className="badge badge-rank2" style={{ fontSize: 10, padding: "1px 6px" }}>2</span>
-          <span>İkinci</span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "var(--text-muted)" }}>
-          <span className="badge badge-rank3" style={{ fontSize: 10, padding: "1px 6px" }}>3</span>
-          <span>Üçüncü</span>
+
+        {/* Rank legend */}
+        <div style={{ display: "flex", gap: 14, marginTop: 10, flexWrap: "wrap" }}>
+          {[
+            { cls: "badge-rank1", label: "Birinci" },
+            { cls: "badge-rank2", label: "İkinci" },
+            { cls: "badge-rank3", label: "Üçüncü" },
+          ].map(({ cls, label }, i) => (
+            <div
+              key={i}
+              style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 11, color: "var(--t3)" }}
+            >
+              <span className={`badge ${cls}`} style={{ fontSize: 10, padding: "1px 6px", borderRadius: 4 }}>
+                {i + 1}
+              </span>
+              {label}
+            </div>
+          ))}
         </div>
       </div>
     </>
