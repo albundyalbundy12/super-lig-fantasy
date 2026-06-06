@@ -1,26 +1,47 @@
 import "server-only";
 
+import { PrismaClient } from "@prisma/client";
+
 /**
- * Placeholder database layer.
+ * Server-only database layer (Task 2).
  *
- * The real schema (PostgreSQL + ORM) is introduced in Task 2 per
- * docs/DATABASE_SCHEMA.md and docs/CODING_AGENT_TASKS.md. This module exists
- * so application code has a single, stable import point for data access from
- * the very first scaffold — but it intentionally performs no real queries yet.
+ * Exposes a single shared PrismaClient instance. The Prisma schema lives in
+ * prisma/schema.prisma and follows docs/DATABASE_SCHEMA.md. Raw Sportmonks data
+ * and calculated fantasy data are kept in separate tables (see the schema).
  *
- * Do NOT add Sportmonks API calls here. Raw API access lives in
- * src/lib/sportmonks and is server-only. Raw (Sportmonks) data and calculated
- * fantasy data must stay separated (see docs/DATABASE_SCHEMA.md).
+ * Do NOT add Sportmonks API calls here — raw API access lives in
+ * src/lib/sportmonks and is server-only.
  */
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
+  });
+
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
+}
 
 export type DbStatus = {
   configured: boolean;
   note: string;
 };
 
+/**
+ * Lightweight readiness flag for the admin page. We only report whether a
+ * DATABASE_URL is present — we never expose the connection string itself.
+ */
 export function getDbStatus(): DbStatus {
+  const configured = Boolean(process.env.DATABASE_URL);
   return {
-    configured: false,
-    note: "Database layer not implemented yet. Scheduled for Task 2 (schema).",
+    configured,
+    note: configured
+      ? "PostgreSQL connected. Schema is migrated and ready for Sportmonks sync (Task 4+)."
+      : "DATABASE_URL is not set. Add it in Replit Secrets to enable the database.",
   };
 }

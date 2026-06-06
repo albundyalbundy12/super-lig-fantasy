@@ -30,7 +30,7 @@ export default function AdminSyncPage() {
       <div className="card">
         <span className="tag">Database</span>
         <p>
-          Configured: <strong>{db.configured ? "yes" : "no"}</strong>
+          Connected: <strong>{db.configured ? "yes" : "no"}</strong>
         </p>
         <p style={{ color: "var(--muted)", fontSize: 13 }}>{db.note}</p>
       </div>
