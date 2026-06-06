@@ -1,2 +1,3 @@
 - [Package firewall blocks npm versions](package-firewall-next.md) — Socket firewall 403s specific package versions (e.g. next@15.x); probe tarball HTTP status and pin an allowed version.
 - [Prisma version pinning](prisma-version-pinning.md) — pin prisma + @prisma/client to v6 (not v7) with Next 14; prisma in deps; build runs prisma generate.
+- [Replit secrets need workflow restart](replit-secrets-runtime.md) — new/changed secrets aren't seen by an already-running workflow; restart it before testing server code.
