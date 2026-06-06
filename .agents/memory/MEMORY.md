@@ -1,0 +1,1 @@
+- [Package firewall blocks npm versions](package-firewall-next.md) — Socket firewall 403s specific package versions (e.g. next@15.x); probe tarball HTTP status and pin an allowed version.
